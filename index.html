@@ -109,13 +109,13 @@
       <img src="./static/images/teaser.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         Flowers, Birds and here are our GIFTs. Our proposed GIFT is a deep parameter-residual learning method using a generator network for 
         parameter-efficient fine-tuning. In training, given the pretrained weights of a layer \(\omega\in \mathbb{R}^{d_{out}\times d_{in}}\) 
         in the backbone, the fine-tuned weights by our GIFT are \(\omega^+=\omega + \text{GIFT}(\omega)\) with learned clustering \(\mathcal{C}_{d_{out},M}\) 
         for the parameters \(\omega\), where \(M\) is a predefined small number (e.g., 96). In testing, \(\mathcal{C}_{d_{out},M}\) plays the role of a 
         semantic segmentation head classifier. For a testing data \(x\) (e.g., a flower image in the VGG Flowers dataset, or a bird in the Caltech-UCSD birds dataset), 
-        its output at the given layer is \(f(x; \omega^+)\in \mathbb{R}^{h \times w \times d_{out}}\) whose ``\(M\)-cluster segmentation results" are simply 
+        its output at the given layer is \(f(x; \omega^+)\in \mathbb{R}^{h \times w \times d_{out}}\) whose "\(M\)-cluster segmentation results" are simply 
         \(f(x; \omega^+) \cdot \mathcal{C}_{d_{out},M} \in \mathbb{R}^{h \times w \times M}\). We observe that semantically meaningful clusters are formed.
       </h2>
     </div>
@@ -125,7 +125,7 @@
 <section class="section">
   <div class="container is-max-desktop">
     <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
+    <div class="columns is-centered has-text-justified">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
@@ -151,10 +151,26 @@
 <section class="hero is-light">
   <div class="container is-max-desktop">
     <div class="hero-body">
+      <h2 class="title is-3">How does GIFT work?</h2>
+      <img src="./static/images/gift-flow.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-justified">
+        Detailed workflow of our proposed \(l\)-layer GIFT for fine-tuning a pretrained and frozen \(L\)-layer Transformer backbone on a downstream task. 
+        For simplicity we assume the pretrained Transformer is isotropic and thus \(d_{out}=d_{in}\) where the subscripts are used to indicate the order. 
+        The task head is trained from scratch for the downstream task.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
       <img src="./static/images/gift.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         Illustration of our proposed GIFT in comparison with LoRA and TOAST. Both LoRA and our GIFT work at the layer level in the sense that they can be 
         placed to update any selected layers, while TOAST is holistic by learning the value modulation based on the output of the entire frozen backbone. 
         LoRA and our GIFT are more efficient in inference than TOAST since the parameter updates can be merged into the backbone after training. Compared 
@@ -168,31 +184,20 @@
   </div>
 </section>
 
-
-<section class="hero">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="./static/images/gift-flow.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
-        Detailed workflow of our proposed \(l\)-layer GIFT for fine-tuning a pretrained and frozen \(L\)-layer Transformer backbone on a downstream task. 
-        For simplicity we assume the pretrained Transformer is isotropic and thus \(d_{out}=d_{in}\) where the subscripts are used to indicate the order. 
-        The task head is trained from scratch for the downstream task.
-      </h2>
-    </div>
-  </div>
-</section>
-
 <section class="hero is-light">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <h2 class="title is-3">Interpretability of GIFT</h2>
+      <h2 class="subtitle">
+        By visualizing the individual clusters from the \(M\)-cluster segmentation maps \(m_{out}\) formed at a given layer \(f(x; \omega^+)\) as 
+        \(m_{out} = f(x; \omega^+) \cdot \mathcal{C}_{d_{out},M} \in \mathbb{R}^{h \times w \times M}\), we observe that 
+        that meaningful clusters consistently emerge after GIFT training on various datasets. Here are some exampes:
+      </h2>
       <img src="./static/images/interpretability-all.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
-        Meaningful clusters consistently emerge after GIFT training on various datasets. From top to bottom, <i>on Flowers</i>, GIFT learns to form clusters 
+      <h2 class="subtitle has-text-justified">
+        From top to bottom, <i>on Flowers</i>, GIFT learns to form clusters 
         on the full flower (Layer 2), petals (Layer 5), stamen (Layers 11 and 12). <i>NABirds</i>, clusters are formed on various parts on the bird, such 
         as the full body (Layer 12), head (Layers 10), wing+tail (Layer 9), torso (Layer 6), and even the background (Layer 2). For <i>Cars</i>, GIFT learns 
         to form clusters on the door (Layer 8), wheel (Layer 4), windshield (Layer 9), and even a composition of both (Layer 11). For <i>ImageNet</i>, clusters 
@@ -209,7 +214,7 @@
       <img src="./static/images/birds.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         For example in the class Reddish Egret (Dark Morph) (2nd row), clusters corresponding to the distinctive neck, beak and legs can be seen. Notably, for 
         Prothonotary Warbler (3rd row), a cluster representing a twig of a tree can also be seen. We hypothesize that this is because almost all the images of 
         this class from the dataset are images of the bird sitting on a twig. Although an undesirable behavior, this shows the interpretable nature of GIFT. 
@@ -226,7 +231,7 @@
       <img src="./static/images/flowers.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         Clusters can focus on very specific parts of the flower like the tips of the petals (Row 3 Column 6, Row 4 Columns 4 and 6), or the whole flower.
       </h2>
     </div>
@@ -240,7 +245,7 @@
       <img src="./static/images/cars.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         The PaCa module in GIFT can form various clusters focusing on different parts of the car. For example, clusters encoding the wheels (Column 3), windshield 
         (Row 1, column 5), bonnet (Row 3, Column 2), headlight (Row 3, Column 5), etc. can be found.
       </h2>
@@ -255,7 +260,7 @@
       <img src="./static/images/dogs.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         The PaCa module in GIFT forms clusters over various parts of the dog's anatomy, many of which are unique for a class. For example, in Rows 3 and 4, clusters on 
         the ears, eyes, snout and face can be found. In Row 4, clusters on the head, torso and a combination of both are formed.
       </h2>
@@ -270,7 +275,7 @@
       <img src="./static/images/imagenet.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-justified">
         Even on a large and diverse dataset like ImageNet, the PaCa module can form clusters over relevant parts of the image. The 4 images (taken from the official validation set) 
         all show different image characteristics, but the clusters still focus on the relevant aspects of the image.
       </h2>
@@ -296,6 +301,11 @@
       <a class="icon-link" href="https://github.com/savadikarc" class="external-link" disabled>
         <i class="fab fa-github"></i>
       </a>
+    </div>
+    <div class="columns is-centered">
+        <a href="https://research.ece.ncsu.edu/ivmcl/" class="external-link">
+           <u>About iVMCL</u>
+        </a>
     </div>
     <div class="columns is-centered">
       <div class="column is-8">
