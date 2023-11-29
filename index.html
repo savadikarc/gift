@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GIFT: Generative Interpretable Fine-Tuning Transformers">
+  <meta name="keywords" content="PEFT, Transformers">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GIFT: Generative Interpretable Fine-Tuning Transformers</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop decorate-purple">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title"><span class="dnerf">Gift</span>: Generative Interpretable Fine-Tuning Transformers</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://savadikarc.github.io">Chinmay Savadikar</a><sup>1</sup>,</span>
+            <span class="author-block">
+              Xi Song<sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://ece.ncsu.edu/people/twu19/">Tianfu Wu</a><sup>1</sup>,
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>North Carolina State University,</span>
+            <span class="author-block"><sup>2</sup>An Independent Researcher</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="TODO"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="TODO"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>ArXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="TODO"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/savadikarc/gift"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser is-light">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/teaser.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Flowers, Birds and here are our GIFTs. Our proposed GIFT is a deep parameter-residual learning method using a generator network for 
+        parameter-efficient fine-tuning. In training, given the pretrained weights of a layer \(\omega\in \mathbb{R}^{d_{out}\times d_{in}}\) 
+        in the backbone, the fine-tuned weights by our GIFT are \(\omega^+=\omega + \text{GIFT}(\omega)\) with learned clustering \(\mathcal{C}_{d_{out},M}\) 
+        for the parameters \(\omega\), where \(M\) is a predefined small number (e.g., 96). In testing, \(\mathcal{C}_{d_{out},M}\) plays the role of a 
+        semantic segmentation head classifier. For a testing data \(x\) (e.g., a flower image in the VGG Flowers dataset, or a bird in the Caltech-UCSD birds dataset), 
+        its output at the given layer is \(f(x; \omega^+)\in \mathbb{R}^{h \times w \times d_{out}}\) whose ``\(M\)-cluster segmentation results" are simply 
+        \(f(x; \omega^+) \cdot \mathcal{C}_{d_{out},M} \in \mathbb{R}^{h \times w \times M}\). We observe that semantically meaningful clusters are formed.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present GIFT (Generative Interpretable Fine-tuning Transformers) for fine-tuning pretrained (often large) Transformer models at downstream tasks 
+            in a parameter-efficient way with built-in interpretability. Our GIFT is a deep parameter-residual learning method, which addresses two problems in 
+            fine-tuning a pretrained Transformer model: Where to apply the parameter-efficient fine-tuning (PEFT) to be extremely lightweight yet sufficiently 
+            expressive, and How to learn the PEFT to better exploit the knowledge of the pretrained model in a direct way? For the former, we select the final 
+            projection (linear) layer in the multi-head self-attention of a Transformer model, and verify its effectiveness. For the latter, in contrast to the 
+            prior art that directly introduce new model parameters (often in low-rank approximation form) to be learned in fine-tuning with downstream data, we 
+            propose a method for learning to generate the fine-tuning parameters. Our GIFT is a hyper-Transformer which take as input the pretrained parameters 
+            of the projection layer to generate its fine-tuning parameters using a proposed Parameter-to-Cluster Attention (PaCa). The PaCa results in a simple 
+            clustering-based forward explainer that plays the role of semantic segmentation in testing. In experiments, our proposed GIFT is tested on the VTAB 
+            benchmark and the fine-grained visual classification (FGVC) benchmark. It obtains significantly better performance than the prior art.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<section class="hero is-light">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/gift.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Illustration of our proposed GIFT in comparison with LoRA and TOAST. Both LoRA and our GIFT work at the layer level in the sense that they can be 
+        placed to update any selected layers, while TOAST is holistic by learning the value modulation based on the output of the entire frozen backbone. 
+        LoRA and our GIFT are more efficient in inference than TOAST since the parameter updates can be merged into the backbone after training. Compared 
+        with LoRA, our GIFT is conceptually different. LoRA learns the low-rank parameters \(A\) and \(B\) by directly treating them as model parameters to 
+        optimize (and might entail searching the rank \(r\), while our GIFT takes the parameters of the pretrained backbone as input and outputs the full 
+        parameter matrix without resorting to the search of the low rank. To address the quadratic complexity of vanilla Transformers and for efficiency, 
+        inspired by the recently proposed Patch-to-Cluster Attention (PaCa) in the PaCa-ViTs, we develop a Parameter-to-Cluster Attention (also termed as PaCa). 
+        The GIFT is shared by different layers of the pretrained backbone in training.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/gift-flow.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Detailed workflow of our proposed \(l\)-layer GIFT for fine-tuning a pretrained and frozen \(L\)-layer Transformer backbone on a downstream task. 
+        For simplicity we assume the pretrained Transformer is isotropic and thus \(d_{out}=d_{in}\) where the subscripts are used to indicate the order. 
+        The task head is trained from scratch for the downstream task.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Interpretability of GIFT</h2>
+      <img src="./static/images/interpretability-all.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Meaningful clusters consistently emerge after GIFT training on various datasets. From top to bottom, <i>on Flowers</i>, GIFT learns to form clusters 
+        on the full flower (Layer 2), petals (Layer 5), stamen (Layers 11 and 12). <i>NABirds</i>, clusters are formed on various parts on the bird, such 
+        as the full body (Layer 12), head (Layers 10), wing+tail (Layer 9), torso (Layer 6), and even the background (Layer 2). For <i>Cars</i>, GIFT learns 
+        to form clusters on the door (Layer 8), wheel (Layer 4), windshield (Layer 9), and even a composition of both (Layer 11). For <i>ImageNet</i>, clusters 
+        on the foreground (Layer 2), players (Layer 7), arms+hands (Layer 8, Cluster 67), ball (Layer 12), and players+ball (Layer 8, Cluster 28) can be seen.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">NABirds</h2>
+      <img src="./static/images/birds.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        For example in the class Reddish Egret (Dark Morph) (2nd row), clusters corresponding to the distinctive neck, beak and legs can be seen. Notably, for 
+        Prothonotary Warbler (3rd row), a cluster representing a twig of a tree can also be seen. We hypothesize that this is because almost all the images of 
+        this class from the dataset are images of the bird sitting on a twig. Although an undesirable behavior, this shows the interpretable nature of GIFT. 
+        We leave addressing how to avoid this behavior to future work.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">VGG Flowers</h2>
+      <img src="./static/images/flowers.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Clusters can focus on very specific parts of the flower like the tips of the petals (Row 3 Column 6, Row 4 Columns 4 and 6), or the whole flower.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Stanford Cars</h2>
+      <img src="./static/images/cars.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        The PaCa module in GIFT can form various clusters focusing on different parts of the car. For example, clusters encoding the wheels (Column 3), windshield 
+        (Row 1, column 5), bonnet (Row 3, Column 2), headlight (Row 3, Column 5), etc. can be found.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Standord Dogs</h2>
+      <img src="./static/images/dogs.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        The PaCa module in GIFT forms clusters over various parts of the dog's anatomy, many of which are unique for a class. For example, in Rows 3 and 4, clusters on 
+        the ears, eyes, snout and face can be found. In Row 4, clusters on the head, torso and a combination of both are formed.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">ImageNet</h2>
+      <img src="./static/images/imagenet.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-centered">
+        Even on a large and diverse dataset like ImageNet, the PaCa module can form clusters over relevant parts of the image. The 4 images (taken from the official validation set) 
+        all show different image characteristics, but the clusters still focus on the relevant aspects of the image.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>TODO</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="TODO">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/savadikarc" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is adapted from <a href="https://nerfies.github.io/">Nerfies</a> and modifed by <a href="https://savadikarc.github.io">Chinmay Savadikar</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
