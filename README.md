@@ -4,5 +4,5 @@
 > <sup>1</sup>North Carolina State University, <sup>2</sup>An Independent Researcher
 
 <p align="center">
-<img src="teaser.jpg" width="60%" height="50%" class="center">
+<img src="teaser.jpg" width="90%" height="100%" class="center">
 </p>
