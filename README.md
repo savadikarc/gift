@@ -1,4 +1,5 @@
-# GIFT: Generative Interpretable Fine-Tuning Transformers
+# GIFT
+> [GIFT: Generative Interpretable Fine-Tuning Transformers](https://arxiv.org/abs/2312.00700)<br>
 > [Chinmay Savadikar](https://savadikarc.github.io)<sup>1</sup>, Xi Song<sup>2</sup>, [Tianfu Wu](https://ece.ncsu.edu/people/twu19/)<sup>1</sup><br>
 > <sup>1</sup>North Carolina State University, <sup>2</sup>An Independent Researcher
 
@@ -10,5 +11,12 @@ Code coming soon!
 
 ## Citation
 ```bibtex
-TODO
+@misc{savadikar2023gift,
+    title={GIFT: Generative Interpretable Fine-Tuning Transformers}, 
+    author={Chinmay Savadikar and Xi Song and Tianfu Wu},
+    year={2023},
+    eprint={2312.00700},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
 ```
