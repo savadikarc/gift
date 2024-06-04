@@ -1,5 +1,5 @@
 # GIFT
-> [GIFT: Generative Interpretable Fine-Tuning Transformers](https://arxiv.org/abs/2312.00700)<br>
+> [GIFT: Generative Interpretable Fine-Tuning](https://arxiv.org/abs/2312.00700)<br>
 > [Chinmay Savadikar](https://savadikarc.github.io)<sup>1</sup>, Xi Song<sup>2</sup>, [Tianfu Wu](https://ece.ncsu.edu/people/twu19/)<sup>1</sup><br>
 > <sup>1</sup>North Carolina State University, <sup>2</sup>An Independent Researcher
 
