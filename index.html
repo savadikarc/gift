@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="GIFT: Generative Interpretable Fine-Tuning Transformers">
-  <meta name="keywords" content="PEFT, Transformers">
+        content="GIFT: Generative Interpretable Fine-Tuning">
+  <meta name="keywords" content="PEFT">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GIFT: Generative Interpretable Fine-Tuning Transformers</title>
 
@@ -37,7 +37,7 @@
     <div class="container is-max-desktop decorate-purple">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title"><span class="dnerf">Gift</span>: Generative Interpretable Fine-Tuning Transformers</h1>
+          <h1 class="title is-1 publication-title"><span class="dnerf">Gift</span>: Generative Interpretable Fine-Tuning</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="https://savadikarc.github.io">Chinmay Savadikar</a><sup>1</sup>,</span>
@@ -93,82 +93,23 @@
   </div>
 </section>
 
-<section class="hero teaser is-light">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img src="./static/images/teaser.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        Flowers, Birds and here are our GIFTs. Our proposed GIFT is a deep parameter-residual learning method using a generator network for 
-        parameter-efficient fine-tuning. In training, given the pretrained weights of a layer \(\omega\in \mathbb{R}^{d_{out}\times d_{in}}\) 
-        in the backbone, the fine-tuned weights by our GIFT are \(\omega^+=\omega + \text{GIFT}(\omega)\) with learned clustering \(\mathcal{C}_{d_{out},M}\) 
-        for the parameters \(\omega\), where \(M\) is a predefined small number (e.g., 96). In testing, \(\mathcal{C}_{d_{out},M}\) plays the role of a 
-        semantic segmentation head classifier. For a testing data \(x\) (e.g., a flower image in the VGG Flowers dataset, or a bird in the Caltech-UCSD birds dataset), 
-        its output at the given layer is \(f(x; \omega^+)\in \mathbb{R}^{h \times w \times d_{out}}\) whose "\(M\)-cluster segmentation results" are simply 
-        \(f(x; \omega^+) \cdot \mathcal{C}_{d_{out},M} \in \mathbb{R}^{h \times w \times M}\). We observe that semantically meaningful clusters are formed.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-justified">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            We present GIFT (Generative Interpretable Fine-tuning Transformers) for fine-tuning pretrained (often large) Transformer models at downstream tasks 
-            in a parameter-efficient way with built-in interpretability. Our GIFT is a deep parameter-residual learning method, which addresses two problems in 
-            fine-tuning a pretrained Transformer model: Where to apply the parameter-efficient fine-tuning (PEFT) to be extremely lightweight yet sufficiently 
-            expressive, and How to learn the PEFT to better exploit the knowledge of the pretrained model in a direct way? For the former, we select the final 
-            projection (linear) layer in the multi-head self-attention of a Transformer model, and verify its effectiveness. For the latter, in contrast to the 
-            prior art that directly introduce new model parameters (often in low-rank approximation form) to be learned in fine-tuning with downstream data, we 
-            propose a method for learning to generate the fine-tuning parameters. Our GIFT is a hyper-Transformer which take as input the pretrained parameters 
-            of the projection layer to generate its fine-tuning parameters using a proposed Parameter-to-Cluster Attention (PaCa). The PaCa results in a simple 
-            clustering-based forward explainer that plays the role of semantic segmentation in testing. In experiments, our proposed GIFT is tested on the VTAB 
-            benchmark and the fine-grained visual classification (FGVC) benchmark. It obtains significantly better performance than the prior art.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-  </div>
-</section>
-
-<section class="hero is-light">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">How does GIFT work?</h2>
-      <img src="./static/images/gift-flow.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        Detailed workflow of our proposed \(l\)-layer GIFT for fine-tuning a pretrained and frozen \(L\)-layer Transformer backbone on a downstream task. 
-        For simplicity we assume the pretrained Transformer is isotropic and thus \(d_{out}=d_{in}\) where the subscripts are used to indicate the order. 
-        The task head is trained from scratch for the downstream task.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="hero">
+<section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <img src="./static/images/gift.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
       <h2 class="subtitle has-text-justified">
-        Illustration of our proposed GIFT in comparison with LoRA and TOAST. Both LoRA and our GIFT work at the layer level in the sense that they can be 
-        placed to update any selected layers, while TOAST is holistic by learning the value modulation based on the output of the entire frozen backbone. 
-        LoRA and our GIFT are more efficient in inference than TOAST since the parameter updates can be merged into the backbone after training. Compared 
-        with LoRA, our GIFT is conceptually different. LoRA learns the low-rank parameters \(A\) and \(B\) by directly treating them as model parameters to 
-        optimize (and might entail searching the rank \(r\), while our GIFT takes the parameters of the pretrained backbone as input and outputs the full 
-        parameter matrix without resorting to the search of the low rank. To address the quadratic complexity of vanilla Transformers and for efficiency, 
-        inspired by the recently proposed Patch-to-Cluster Attention (PaCa) in the PaCa-ViTs, we develop a Parameter-to-Cluster Attention (also termed as PaCa). 
-        The GIFT is shared by different layers of the pretrained backbone in training.
+        LoRA (a) is a layer-specific fine-tuning paradigm by  learning the low-rank weight residuals directly as model 
+        parameters in optimization. Our GIFT (b) is a deep weight-residual learning paradigm, which is shared across all 
+        the layers by treating pretrained weights from different fine-tuning layers (e.g., \(L\)) as a batch of input 
+        ''data'' and directly computes fine-tuned weights via residual learning. We show that simply 
+        parameterizing GIFT with two plain linear layers (without bias terms) is surprisingly effective, i.e., 
+        \(\hat{\omega}=\omega \cdot (\mathbb{I}+\phi_{d_{in}\times r}\cdot \psi_{r\times d_{in}})\) where \(\mathbb{I}\) 
+        is an identity matrix. \(\Theta=(\phi, \psi)\) are the learnable parameters of the two linear projections (layers) of GIFT 
+        with \(r\) being a hyper-parameter. During fine-tuning, the loss function for a downstream task is optimized with respect 
+        to the parameters of GIFT \((\Theta)\). After applying GIFT to a linear layer in the pretrained Transformer, the output of the layer can be written as <span id="gift-out">\(\hat{y}_{ N\times d_{out}} = x_{ N\times d_{in}} \cdot \underbrace{\hat{\omega}^{\top}}_{\text{GIFTed weights}} + b =\underbrace{x_{ N\times d_{in}} \cdot (\mathbb{I} +  \psi^{\top}\cdot \phi^{\top})}_{\text{GIFTed activation, denoted by }  \hat{x}_{ N\times d_{in}}} \cdot \omega^{\top} + b\)</span>.
+        With this formulation, our GIFT can be equivalentlty applied to the activation/representation space.
       </h2>
     </div>
   </div>
@@ -177,98 +118,69 @@
 <section class="hero is-light">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <h2 class="title is-3">Interpretability of GIFT</h2>
-      <h2 class="subtitle">
-        By visualizing the individual clusters from the \(M\)-cluster segmentation maps \(m_{out}\) formed at a given layer \(f(x; \omega^+)\) as 
-        \(m_{out} = f(x; \omega^+) \cdot \mathcal{C}_{d_{out},M} \in \mathbb{R}^{h \times w \times M}\), we observe that 
-        that meaningful clusters consistently emerge after GIFT training on various datasets. Here are some exampes:
+      <h2 class="title is-3">How expressive is this simple GIFT?</h2>
+      <img src="./static/images/teaser.svg"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-justified">
+        <i>Left</i>: Comparison of accuracy vs. parameters between different PEFT methods and GIFT on the Commonsense170k benchmark
+        using LLaMa-1 (7B), and Llama-2 (7B)-3 (8B) models. GIFT obtains better performance with significant;y fewer parameters.
+        <i>Right</i>: When GIFT is applied to fine-tune the projection layers in the multi-head self-attention modules of Vision Tranformers on image classification tasks,
+        the output of the first linear layer <span id="cluster-eq">\((C_{d_{out}\times r}=\omega_{d_{out}\times d_{in}}\cdot \phi_{d_{in}\times r})\)</span> plays the role 
+        of a \(r\)-way segmentation/token-clustering head. This localization ability emerges as a by-product without any direct supervision for the segmentation maps,
+        using the standard cross-entropy loss during fine-tuning.
+        The maps can form on objects/parts in images, even handling occlusions (e.g., the bird body in the right-bottom row), 
+        and finding relevant objects (full bird, head in right-top row) even if the object occupies a small part of the image.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="hero" id="experiments">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Results: Commonsense170k</h2>
+      <img src="./static/images/results-commonsense.png"
+                class="interpolation-image"
+                alt="GIFT."/>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light" id="more-interpretability">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Results: Visual Recognition</h2>
+      <h2 class="title is-4">FGVC Benchmark</h2>
+      <img src="./static/images/results-fgvc.png"
+                 class="interpolation-image"
+                 alt="GIFT."/>
+      <h2 class="subtitle has-text-justified">
+        GIFT performs better than all the baselines on the FGVC benchmark. Moreover, we show that meaningful visual segmentation/token-clustering maps are formed. 
+        We show examples of head, wings and legs of birds in the <i>top-left</i>,  examples of flower 
+        petals in the <i>top-right</i>, examples of head, ears and legs of dogs in the <i>bottom-left</i>, and 
+        examples of tires, windshield and bumper of cars in the <i>bottom-right</i>. We can see global (object level) 
+        as well as part-level maps.
       </h2>
       <img src="./static/images/interpretability-all.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        From top to bottom, <i>on Flowers</i>, GIFT learns to form clusters 
-        on the full flower (Layer 2), petals (Layer 5), stamen (Layers 11 and 12). <i>NABirds</i>, clusters are formed on various parts on the bird, such 
-        as the full body (Layer 12), head (Layers 10), wing+tail (Layer 9), torso (Layer 6), and even the background (Layer 2). For <i>Cars</i>, GIFT learns 
-        to form clusters on the door (Layer 8), wheel (Layer 4), windshield (Layer 9), and even a composition of both (Layer 11). For <i>ImageNet</i>, clusters 
-        on the foreground (Layer 2), players (Layer 7), arms+hands (Layer 8, Cluster 67), ball (Layer 12), and players+ball (Layer 8, Cluster 28) can be seen.
-      </h2>
+
+      <h2 class="title is-4" style="margin-top: 1rem">VTAB Benchmark</h2>
+      <img src="./static/images/results-vtab.png"
+                class="interpolation-image"
+                alt="GIFT."/>
     </div>
   </div>
 </section>
 
-<section class="hero">
+<section class="hero" id="experiments">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <h2 class="title is-3">NABirds</h2>
-      <img src="./static/images/birds.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        For example in the class Reddish Egret (Dark Morph) (2nd row), clusters corresponding to the distinctive neck, beak and legs can be seen. Notably, for 
-        Prothonotary Warbler (3rd row), a cluster representing a twig of a tree can also be seen. We hypothesize that this is because almost all the images of 
-        this class from the dataset are images of the bird sitting on a twig. Although an undesirable behavior, this shows the interpretable nature of GIFT. 
-        We leave addressing how to avoid this behavior to future work.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="hero is-light">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">VGG Flowers</h2>
-      <img src="./static/images/flowers.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        Clusters can focus on very specific parts of the flower like the tips of the petals (Row 3 Column 6, Row 4 Columns 4 and 6), or the whole flower.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="hero">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">Stanford Cars</h2>
-      <img src="./static/images/cars.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        The PaCa module in GIFT can form various clusters focusing on different parts of the car. For example, clusters encoding the wheels (Column 3), windshield 
-        (Row 1, column 5), bonnet (Row 3, Column 2), headlight (Row 3, Column 5), etc. can be found.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="hero is-light">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">Standord Dogs</h2>
-      <img src="./static/images/dogs.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        The PaCa module in GIFT forms clusters over various parts of the dog's anatomy, many of which are unique for a class. For example, in Rows 3 and 4, clusters on 
-        the ears, eyes, snout and face can be found. In Row 4, clusters on the head, torso and a combination of both are formed.
-      </h2>
-    </div>
-  </div>
-</section>
-
-<section class="hero">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">ImageNet</h2>
-      <img src="./static/images/imagenet.svg"
-                 class="interpolation-image"
-                 alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        Even on a large and diverse dataset like ImageNet, the PaCa module can form clusters over relevant parts of the image. The 4 images (taken from the official validation set) 
-        all show different image characteristics, but the clusters still focus on the relevant aspects of the image.
-      </h2>
+      <h2 class="title is-3">Results: Natural Language Understanding (GLUE)</h2>
+      <img src="./static/images/results-glue.png"
+                class="interpolation-image"
+                alt="GIFT."/>
     </div>
   </div>
 </section>
@@ -277,10 +189,10 @@
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
     <pre><code>
-@misc{savadikar2023gift,
-  title={GIFT: Generative Interpretable Fine-Tuning Transformers}, 
+@misc{savadikar2024gift,
+  title={GIFT: Generative Interpretable Fine-Tuning}, 
   author={Chinmay Savadikar and Xi Song and Tianfu Wu},
-  year={2023},
+  year={2024},
   eprint={2312.00700},
   archivePrefix={arXiv},
   primaryClass={cs.CV}

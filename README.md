@@ -11,10 +11,10 @@ Code coming soon!
 
 ## Citation
 ```bibtex
-@misc{savadikar2023gift,
-    title={GIFT: Generative Interpretable Fine-Tuning Transformers}, 
+@misc{savadikar2024gift,
+    title={GIFT: Generative Interpretable Fine-Tuning}, 
     author={Chinmay Savadikar and Xi Song and Tianfu Wu},
-    year={2023},
+    year={2024},
     eprint={2312.00700},
     archivePrefix={arXiv},
     primaryClass={cs.CV}
