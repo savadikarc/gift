@@ -162,3 +162,7 @@ body {
   border: 1px solid;
   border-color: #bba9d8 !important;
 }
+
+.is-light a {
+  color: hsl(204, 86%, 53%) !important;
+}
