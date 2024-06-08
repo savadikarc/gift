@@ -1,0 +1,7 @@
+_BASE_: "./base.yaml"
+RUN_N_TIMES: 999
+DATA:
+  NAME: "nabirds"
+  DATAPATH: "./data/nabirds"  #TODO: need to specify here
+  NUMBER_CLASSES: 555
+  MULTILABEL: False

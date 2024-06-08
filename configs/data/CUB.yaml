@@ -1,0 +1,7 @@
+_BASE_: "./base.yaml"
+RUN_N_TIMES: 999999999999
+DATA:
+  NAME: "CUB"
+  DATAPATH: "./data/cub"  #TODO: need to specify here
+  NUMBER_CLASSES: 200
+  MULTILABEL: False

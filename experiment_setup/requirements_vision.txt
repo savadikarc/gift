@@ -1,0 +1,14 @@
+tensorflow==2.14.0
+tfds-nightly==4.4.0.dev202201080107
+tensorflow-addons==0.23.0
+mock==5.1.0
+fvcore==0.1.5.post20221221
+tqdm==4.66.4
+pandas==2.2.1
+scikit-learn==1.4.2
+scipy==1.11.4
+simplejson==3.17.6
+termcolor==2.4.0
+ml-collections==0.1.1
+wandb==0.16.6
+chardet==5.2.0

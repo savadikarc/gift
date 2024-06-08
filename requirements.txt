@@ -1,0 +1,4 @@
+opencv-python==4.9.0.80
+timm==0.9.8
+loralib==0.1.2
+transformers==4.40.2

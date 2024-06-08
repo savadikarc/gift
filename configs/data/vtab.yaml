@@ -1,0 +1,24 @@
+_BASE_: "./base.yaml"
+# RUN_N_TIMES: 999999999999
+DATA:
+  NAME: "vtab-cifar(num_classes=100)" # Overriden by the training script
+  # NAME: "vtab-eurosat"
+  # NAME: "vtab-oxford_flowers102"
+  # NAME: "vtab-caltech101"
+  # NAME: "vtab-clevr(task=\"closest_object_distance\")"
+  # NAME: "vtab-clevr(task=\"count_all\")"
+  # NAME: "vtab-dtd"
+  # NAME: "vtab-oxford_iiit_pet"
+  # NAME: "vtab-patch_camelyon"
+  # NAME: "vtab-sun397"
+  # NAME: "vtab-dmlab"
+  # NAME: "vtab-svhn"
+  # NAME: "vtab-smallnorb(predicted_attribute=\"label_azimuth\")"
+  # NAME: "vtab-smallnorb(predicted_attribute=\"label_elevation\")"
+  # NAME: "vtab-dsprites(predicted_attribute=\"label_x_position\",num_classes=16)"
+  # NAME: "vtab-dsprites(predicted_attribute=\"label_orientation\",num_classes=16)"
+  # NAME: "vtab-kitti(task=\"closest_vehicle_distance\")"
+  # NAME: "vtab-diabetic_retinopathy(config=\"btgraham-300\")"
+  DATAPATH: "./data/vtab"  #TODO: need to specify here
+  NUMBER_CLASSES: 100
+  MULTILABEL: False

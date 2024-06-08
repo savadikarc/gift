@@ -1,0 +1,7 @@
+_BASE_: "./base.yaml"
+RUN_N_TIMES: 999
+DATA:
+  NAME: "StanfordDogs"
+  DATAPATH: "./data/stanforddogs"  #TODO: need to specify here
+  NUMBER_CLASSES: 120
+  MULTILABEL: False

@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# Except this file
+!.gitignore
+
+# Keep all json files in subdirectories
+!train.json
+!val.json
+!test.json

@@ -1,0 +1,7 @@
+_BASE_: "./base.yaml"
+RUN_N_TIMES: 999
+DATA:
+  NAME: "OxfordFlowers"
+  DATAPATH: "./data/oxfordflowers"  #TODO: need to specify here
+  NUMBER_CLASSES: 102
+  MULTILABEL: False

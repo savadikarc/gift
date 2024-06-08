@@ -1,0 +1,4 @@
+datasets==2.18.0
+evaluate==0.4.2
+wandb==0.16.6
+pyreft @ git+https://github.com/stanfordnlp/pyreft.git@432dc64d01ff80002c6e83bfdaeb55710bf6a80a
