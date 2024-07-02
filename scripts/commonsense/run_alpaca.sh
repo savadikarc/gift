@@ -5,25 +5,26 @@ SCRIPT_DIR=$(dirname "$SCRIPT")
 
 EXECUTION_DIR="$SCRIPT_DIR/../.."
 
+export PYTHONPATH=$EXECUTION_DIR:$PYTHONPATH
+
 GPU=$1
 LR=$2
 SEED=$3
 MODEL=$4
 
-CUDA_VISIBLE_DEVICES=$GPU python $SCRIPT_DIR/train.py -task commonsense \
+CUDA_VISIBLE_DEVICES=$GPU python $SCRIPT_DIR/train.py -task alpaca \
     -data_dir $EXECUTION_DIR/data/language_data \
-    --output_dir $EXECUTION_DIR/artifacts/commonsense/$MODEL \
+    --output_dir $EXECUTION_DIR/artifacts/alpaca/$MODEL \
     -model $MODEL \
     -seed $SEED \
-    -e 6 -lr $LR \
-    -gradient_accumulation_steps 4 \
-    -batch_size 8 \
-    -eval_batch_size 4 \
-    --dropout 0.00 \
+    -e 12 -lr $LR \
+    -gradient_accumulation_steps 32 \
+    -batch_size 4 \
+    -eval_batch_size 2 \
     --test_split test \
     --use_normalized_template \
-    --warmup_ratio 0.1 \
-    --greedy_decoding \
+    --warmup_ratio 0.0 \
     --weight_decay 0.0 \
+    --max_length 768 \
     --save_model \
     ${@:5}

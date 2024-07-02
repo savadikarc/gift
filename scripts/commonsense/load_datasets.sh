@@ -12,6 +12,8 @@ mkdir $DATA_DIR/commonsense_170k
 mv LLM-Adapters/ft-training_set/commonsense_170k.json $DATA_DIR/commonsense_170k/train.json
 mkdir $DATA_DIR/math_10k
 mv LLM-Adapters/ft-training_set/math_10k.json $DATA_DIR/math_10k/train.json
+mkdir $DATA_DIR/alpaca_data_cleaned
+mv LLM-Adapters/ft-training_set/alpaca_data_cleaned.json $DATA_DIR/alpaca_data_cleaned/train.json
 mkdir $DATA_DIR/ultrafeedback
 mv ultrafeedback-dataset/train.json $DATA_DIR/ultrafeedback/train.json
 

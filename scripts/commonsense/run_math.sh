@@ -10,12 +10,12 @@ LR=$2
 SEED=$3
 MODEL=$4
 
-CUDA_VISIBLE_DEVICES=$GPU python $SCRIPT_DIR/train.py -task commonsense \
+CUDA_VISIBLE_DEVICES=$GPU python $SCRIPT_DIR/train.py -task math \
     -data_dir $EXECUTION_DIR/data/language_data \
-    --output_dir $EXECUTION_DIR/artifacts/commonsense/$MODEL \
+    --output_dir $EXECUTION_DIR/artifacts/math/$MODEL \
     -model $MODEL \
     -seed $SEED \
-    -e 6 -lr $LR \
+    -e 12 -lr $LR \
     -gradient_accumulation_steps 4 \
     -batch_size 8 \
     -eval_batch_size 4 \
