@@ -4,7 +4,10 @@
 [[**Paper**](https://arxiv.org/abs/2312.00700)] | [[**Website**](https://savadikarc.github.io/gift)]
 
 <p align="center">
-<img src="teaser.jpg" width="80%" height="100%" class="center">
+<img src="acc-vs-params.jpg" width="70%" height="100%" class="center">
+</p>
+<p align="center">
+<img src="clusters.jpg" width="70%" height="100%" class="center">
 </p>
 
 # Installation
@@ -36,8 +39,7 @@ from gift.gift import GIFTConfig, GIFTWrapperForCausalLM
 dtype = torch.bfloat16 # or torch.float32, if bfloat16 is not supported
 backbone = AutoModelForCausalLM.from_pretrained(
     "meta-llama/Meta-Llama-3-8B",
-    torch_dtype=dtype if dtype != "float8" else None,  # save memory
-    load_in_8bit=True if dtype == "float8" else False,
+    torch_dtype=dtype,
     device_map=<DEVICE>
 )
 

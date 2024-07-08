@@ -41,3 +41,18 @@ The same can be done for tuning scripts as well.
   ./visualize.sh gift <DATASET> <EXP_NAME> <GPU_ID> vit_base_patch16_224.augreg_in21k --evaluate --class_to_visualize 0 --gift_block_block_type simple_block [--artifact_dir <ARTIFACT_DIR>]
   ```
   ```<DATASET>``` can take values in ```CUB```, ```StanfordCars```, ```StanfordDogs```, ```OxfordFlowers```, or ```nabirds```. ```<EXP_NAME>``` is the name of the experment generated after the training is complete. `<EXP>` is the name of the experiment (specified or generated) after the training is complete for the `<DATASET>`.
+- For example, to visualize the clusters in the paper, run the following command:
+  ```sh
+  # Figure 2 (Check layers and clusters by subtracting 1 from those mentioned in the paper, since the figures consider
+  # zero indexing.)
+  ./visualize.sh gift nabirds 0 vit_base_patch16_224.augreg_in21k --evaluate --class_to_visualize 47
+  # Figure 4 (Appendix)
+  ./visualize.sh gift nabirds 0 vit_base_patch16_224.augreg_in21k --evaluate --class_to_visualize 333
+  ./visualize.sh gift nabirds 0 vit_base_patch16_224.augreg_in21k --evaluate --class_to_visualize 49
+  ```
+
+## Validation
+To validate the models on the test sets, run the following command:
+```sh
+./validate.sh <METHOD> <DATASET> <GPU_ID> <EXP_NAME> vit_base_patch16_224.augreg_in21k --evaluate [--artifact_dir <ARTIFACT_DIR>]
+```
