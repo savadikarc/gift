@@ -4,7 +4,11 @@
 [[**Paper**](https://arxiv.org/abs/2312.00700)] | [[**Code**](https://github.com/savadikarc/gift/tree/main)]
 
 <p align="center">
-<img src="teaser.jpg" width="80%" height="100%" class="center">
+<img src="acc-vs-params.jpg" width="70%" height="100%" class="center">
+</p>
+
+<p align="center">
+<img src="clusters.jpg" width="70%" height="100%" class="center">
 </p>
 
 ## Citation

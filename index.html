@@ -33,7 +33,7 @@
 
 
 <section class="hero">
-  <div class="hero-body">
+  <div class="hero-body" style="border: none;">
     <div class="container is-max-desktop decorate-purple">
       <div class="columns is-centered">
         <div class="column has-text-centered">
@@ -93,45 +93,86 @@
   </div>
 </section>
 
-<section class="hero teaser">
+<section class="hero teaser center">
   <div class="container is-max-desktop">
-    <div class="hero-body">
+    <div class="hero-body textbox">
+      <div class="center">
       <img src="./static/images/gift.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        LoRA (a) is a layer-specific fine-tuning paradigm by  learning the low-rank weight residuals directly as model 
-        parameters in optimization. Our GIFT (b) is a deep weight-residual learning paradigm, which is shared across all 
-        the layers by treating pretrained weights from different fine-tuning layers (e.g., \(L\)) as a batch of input 
-        ''data'' and directly computes fine-tuned weights via residual learning. We show that simply 
-        parameterizing GIFT with two plain linear layers (without bias terms) is surprisingly effective, i.e., 
-        \(\hat{\omega}=\omega \cdot (\mathbb{I}+\phi_{d_{in}\times r}\cdot \psi_{r\times d_{in}})\) where \(\mathbb{I}\) 
-        is an identity matrix. \(\Theta=(\phi, \psi)\) are the learnable parameters of the two linear projections (layers) of GIFT 
-        with \(r\) being a hyper-parameter. During fine-tuning, the loss function for a downstream task is optimized with respect 
-        to the parameters of GIFT \((\Theta)\). After applying GIFT to a linear layer in the pretrained Transformer, the output of the layer can be written as <span id="gift-out">\(\hat{y}_{ N\times d_{out}} = x_{ N\times d_{in}} \cdot \underbrace{\hat{\omega}^{\top}}_{\text{GIFTed weights}} + b =\underbrace{x_{ N\times d_{in}} \cdot (\mathbb{I} +  \psi^{\top}\cdot \phi^{\top})}_{\text{GIFTed activation, denoted by }  \hat{x}_{ N\times d_{in}}} \cdot \omega^{\top} + b\)</span>.
-        With this formulation, our GIFT can be equivalentlty applied to the activation/representation space.
-      </h2>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          LoRA (a) is a layer-specific fine-tuning paradigm by  learning the low-rank weight residuals directly as model 
+          parameters in optimization. Our GIFT (b) is a deep weight-residual learning paradigm, which is shared across all 
+          the layers by treating pretrained weights from different fine-tuning layers (e.g., \(L\)) as a batch of input 
+          ''data'' and directly computes fine-tuned weights via residual learning. We show that simply 
+          parameterizing GIFT with two plain linear layers (without bias terms) is surprisingly effective, i.e., 
+          \(\hat{\omega}=\omega \cdot (\mathbb{I}+\phi_{d_{in}\times r}\cdot \psi_{r\times d_{in}})\) where \(\mathbb{I}\) 
+          is an identity matrix. \(\Theta=(\phi, \psi)\) are the learnable parameters of the two linear projections (layers) of GIFT 
+          with \(r\) being a hyper-parameter. During fine-tuning, the loss function for a downstream task is optimized with respect 
+          to the parameters of GIFT \((\Theta)\). After applying GIFT to a linear layer in the pretrained Transformer, the output of the 
+          layer can be written as <span id="gift-out">\(\hat{y}_{ N\times d_{out}} = x_{ N\times d_{in}} \cdot \underbrace{\hat{\omega}^{\top}}_{\text{GIFTed weights}} + b =\underbrace{x_{ N\times d_{in}} \cdot (\mathbb{I} +  \psi^{\top}\cdot \phi^{\top})}_{\text{GIFTed activation, denoted by }  \hat{x}_{ N\times d_{in}}} \cdot \omega^{\top} + b\)</span>.
+          With this formulation, our GIFT can be equivalentlty applied to the activation/representation space.
+        </h2>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="hero is-light">
+<section class="hero">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <h2 class="title is-3">How expressive is this simple GIFT?</h2>
-      <img src="./static/images/teaser.svg"
+      <div class="center">
+      <img src="./static/images/acc-vs-params.svg"
+                 style="width: 100%;"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        <i>Left</i>: Comparison of accuracy vs. parameters between different PEFT methods and GIFT on the Commonsense170k benchmark
-        using LLaMa-1 (7B), and Llama-2 (7B)-3 (8B) models. GIFT obtains better performance with significant;y fewer parameters.
-        <i>Right</i>: When GIFT is applied to fine-tune the projection layers in the multi-head self-attention modules of Vision Tranformers on image classification tasks,
-        the output of the first linear layer <span id="cluster-eq">\((C_{d_{out}\times r}=\omega_{d_{out}\times d_{in}}\cdot \phi_{d_{in}\times r})\)</span> plays the role 
-        of a \(r\)-way segmentation/token-clustering head. This localization ability emerges as a by-product without any direct supervision for the segmentation maps,
-        using the standard cross-entropy loss during fine-tuning.
-        The maps can form on objects/parts in images, even handling occlusions (e.g., the bird body in the right-bottom row), 
-        and finding relevant objects (full bird, head in right-top row) even if the object occupies a small part of the image.
-      </h2>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          (<i><b>Left</b></i>): For instruction following, GIFT obtains better Win Rate against <span class="tt">text-davinci</span> using Alpaca-Eval v1.0 than the recently proposed representation fine-tuning method, 
+          LoReFT, with the same parameter budget using <span class="tt">Llama-2 7B</span>, and can perform slightly better than <span class="tt">GPT 3.5 Turbo 1106</span> given more parameter budget (which is still 4 times less than LoRA).<br>
+          (<i><b>Right</b></i>): GIFT obtains 5.9% absolute increase in average accuracy with 53.8 times fewer parameters on the Commonsense170k reasoning benchmark using <span class="tt">Llama-3 8B</span> 
+          in comparison with LoRA. It is also consistently better than LoReFT, but using about half the number of parameters.
+        </h2>
+      </div>
+      <div class="center">
+        <img src="./static/images/interpretability.svg"
+                   class="interpolation-image"
+                   alt="GIFT."/>
+        </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          When GIFT is applied to fine-tune the projection layers in the multi-head self-attention modules of Vision Tranformers on image classification tasks,
+          the output of the first linear layer <span id="cluster-eq">\((C_{d_{out}\times r}=\omega_{d_{out}\times d_{in}}\cdot \phi_{d_{in}\times r})\)</span> plays the role 
+          of a \(r\)-way segmentation/token-clustering head. This localization ability emerges as a by-product without any direct supervision for the segmentation maps,
+          using the standard cross-entropy loss during fine-tuning. The maps can form on objects/parts in images, even handling occlusions (e.g., the bird body in the fifth column), 
+          and finding relevant objects (full bird, head in third column) even if the object occupies a small part of the image.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light" id="experiments">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Instruction Tuning</h2>
+      <div class="center">
+      <img src="./static/images/results-instruct.png"
+                width="50%"
+                class="interpolation-image center"
+                alt="GIFT."/>
+      </div>
+      <div class="textbox-white">
+        <h2 class="subtitle has-text-justified">
+          Results of fine-tuning the pretrained <span class="tt">Llama 2 7B</span> with GIFT for instruction following. Given the same parameter budget \(r=16\), GIFT outperforms prior methods. 
+          With an increased budget \(r=128\), which is still 4 times less than LoRA, <i>GIFT even outperforms</i> <span class="tt">GPT 3.5 Turbo 1106</span>. During the hyperparameter tuning, 
+          we observe that the win rate does not show significant gains above \(r=64\), but we choose \(r=128\) since it obtains the best results during hyperparameter tuning.
+        </h2>
+      </div>
     </div>
   </div>
 </section>
@@ -139,10 +180,60 @@
 <section class="hero" id="experiments">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <h2 class="title is-3">Results: Commonsense170k</h2>
+      <h2 class="title is-3">Commonsense Reasoning</h2>
+      <div class="center">
       <img src="./static/images/results-commonsense.png"
                 class="interpolation-image"
                 alt="GIFT."/>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          Comparisons on eight commonsense reasoning benchmarks by fine-tuning the pretrained <span class="tt">LLaMA-1 7B</span>, <span class="tt">Llama 2 7B</span> and <span class="tt">Llama 3 8B</span> models.
+          GIFT achieves slightly better accuracy than all the baselines while using  significantly less parameters.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light" id="experiments">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Arithmetic Reasoning</h2>
+      <div class="center">
+      <img src="./static/images/results-math.png"
+                width="80%"
+                class="interpolation-image"
+                alt="GIFT."/>
+      </div>
+      <div class="textbox-white">
+        <h2 class="subtitle has-text-justified">
+          Comparisons on Arithmetic reasoning benchmarks by fine-tuning the pretrained <span class="tt">LLaMA-1 7B</span>.
+          The results with GIFT depend on the component to which it is applied to. When GIFT is applied to <span class="tt">Query+Key+Value+Up+Down</span>, 
+          GIFT performs equivalent to LoRA. The performance is lower when applied to <span class="tt">Query+Value</span>, and in between the two when applied to 
+          <span class="tt">Proj</span>. Together with the results on the commonsense reasoning benchmark, the performance 
+          of our GIFT vary with respect to where to apply it and differently across individual benchmarks, which reinforces the need of the search 
+          for where to apply fine-tuning as done by LoReFT.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero" id="experiments">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Natural Language Understanding (GLUE)</h2>
+      <div class="center">
+      <img src="./static/images/results-glue.png"
+                class="interpolation-image"
+                alt="GIFT."/>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          Results on the GLUE benchmark. Following the common protocol, we report the Matthew's Correlation for CoLA, Pearson's Correlation for STS-B. For all other datasets, we report the accuracy.
+        </h2>
+      </div>
     </div>
   </div>
 </section>
@@ -150,40 +241,51 @@
 <section class="hero is-light" id="more-interpretability">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <h2 class="title is-3">Results: Visual Recognition</h2>
-      <h2 class="subtitle has-text-justified" style="margin-bottom: 2em;">
-      For the visual recognition tasks, we fine-tune the ViT-B/16 model pretrained on ImageNet21k using a supervised objective (which is available in <a href="https://github.com/huggingface/pytorch-image-models" style="font-family: Courier">timm</a>).
-      </h2>
+      <h2 class="title is-3">Visual Recognition</h2>
+      <div>
+        <h2 class="subtitle has-text-justified" style="margin-bottom: 2em;">
+        For the visual recognition tasks, we fine-tune the ViT-B/16 model pretrained on ImageNet21k using a supervised objective
+        (which is available in <a href="https://github.com/huggingface/pytorch-image-models" class="tt">timm</a>).
+        </h2>
+      </div>
       <h2 class="title is-4">FGVC Benchmark</h2>
+      <div class="center">
       <img src="./static/images/results-fgvc.png"
                  class="interpolation-image"
                  alt="GIFT."/>
-      <h2 class="subtitle has-text-justified">
-        GIFT performs better than all the baselines on the FGVC benchmark. Moreover, we show that meaningful visual segmentation/token-clustering maps are formed. 
-        We show examples of head, wings and legs of birds in the <i>top-left</i>,  examples of flower 
-        petals in the <i>top-right</i>, examples of head, ears and legs of dogs in the <i>bottom-left</i>, and 
-        examples of tires, windshield and bumper of cars in the <i>bottom-right</i>. We can see global (object level) 
-        as well as part-level maps.
-      </h2>
-      <img src="./static/images/interpretability-all.svg"
+      </div>
+      <div class="textbox-white">
+        <h2 class="subtitle has-text-justified">
+          Results on the finegrained visual classification (FGVC) tasks. The number of trainable parameters are reported without the classification head which has the same number 
+          of parameters for all the methods. The GPU memory usage is reported via <span class="tt">torch.cuda.max_memory_allocated()</span> during training with the batch size 32.
+        </h2>
+      </div>
+      <div class="center">
+        <img src="./static/images/interpretability-all.svg"
                  class="interpolation-image"
                  alt="GIFT."/>
+      </div>
+      <div class="textbox-white">
+        <h2 class="subtitle has-text-justified">
+          We show that meaningful visual segmentation/token-clustering maps are formed. 
+          We show examples of head, wings and legs of birds in the <i>top-left</i>,  examples of flower 
+          petals in the <i>top-right</i>, examples of head, ears and legs of dogs in the <i>bottom-left</i>, and 
+          examples of tires, windshield and bumper of cars in the <i>bottom-right</i>. We can see global (object level) 
+          as well as part-level maps.
+        </h2>
+      </div>
 
       <h2 class="title is-4" style="margin-top: 1rem">VTAB Benchmark</h2>
+      <div class="center">
       <img src="./static/images/results-vtab.png"
                 class="interpolation-image"
                 alt="GIFT."/>
-    </div>
-  </div>
-</section>
-
-<section class="hero" id="experiments">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <h2 class="title is-3">Results: Natural Language Understanding (GLUE)</h2>
-      <img src="./static/images/results-glue.png"
-                class="interpolation-image"
-                alt="GIFT."/>
+      </div>
+      <div class="textbox-white">
+        <h2 class="subtitle has-text-justified">
+          Results on the VTAB-1k benchmark.
+        </h2>
+      </div>
     </div>
   </div>
 </section>
@@ -191,7 +293,7 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>
+    <pre class="rounded"><code>
 @misc{savadikar2024gift,
   title={GIFT: Generative Interpretable Fine-Tuning}, 
   author={Chinmay Savadikar and Xi Song and Tianfu Wu},
@@ -218,7 +320,7 @@
     </div>
     <div class="columns is-centered">
         <a href="https://research.ece.ncsu.edu/ivmcl/" class="external-link">
-           <u>About iVMCL</u>
+           About iVMCL
         </a>
     </div>
     <div class="columns is-centered">
