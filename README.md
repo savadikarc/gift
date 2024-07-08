@@ -4,7 +4,10 @@
 [[**Paper**](https://arxiv.org/abs/2312.00700)] | [[**Website**](https://savadikarc.github.io/gift)]
 
 <p align="center">
-<img src="teaser.jpg" width="80%" height="100%" class="center">
+<img src="acc-vs-params.jpg" width="70%" height="100%" class="center">
+</p>
+<p align="center">
+<img src="clusters.jpg" width="70%" height="100%" class="center">
 </p>
 
 # Installation
@@ -36,8 +39,7 @@ from gift.gift import GIFTConfig, GIFTWrapperForCausalLM
 dtype = torch.bfloat16 # or torch.float32, if bfloat16 is not supported
 backbone = AutoModelForCausalLM.from_pretrained(
     "meta-llama/Meta-Llama-3-8B",
-    torch_dtype=dtype if dtype != "float8" else None,  # save memory
-    load_in_8bit=True if dtype == "float8" else False,
+    torch_dtype=dtype,
     device_map=<DEVICE>
 )
 
@@ -135,8 +137,8 @@ model = GIFTWrapperForSeqClassification(gift_config, backbone)
 Please follow the instructions in [experiment_setup/SETUP.md](experiment_setup/SETUP.md) to setup the environment.
 
 # Experiments and Setup
-## Commonsense Reasoning
-Please refer to [scripts/commonsense/README.md](scripts/commonsense/README.md) for details on data preparation and training.
+## Language Modeling
+Please refer to [scripts/language_modeling/README.md](scripts/language_modeling/README.md) for details on data preparation and training for commonsense reasoning, arithmetic reasoning and instruction tuning experiments.
 
 ## Visual Recognition
 ### FGVC
@@ -146,7 +148,7 @@ Please refer to [scripts/visual_classification/fgvc/README.md](scripts/visual_cl
 Please refer to [scripts/visual_classification/vtab/README.md](scripts/visual_classification/vtab/README.md) for details on data preparation and training.
 
 ## Natural Language Understanding using GLUE
-Please refer to [scripts/glue/README.md](scripts/glue/README.md) for details on data preparation and training.
+Please refer to [scripts/language_understanding/README.md](scripts/language_understanding/README.md) for details on data preparation and training.
 
 # Acknowledgements
 This code is based on code from [timm](https://github.com/huggingface/pytorch-image-models/tree/main), [TOAST](https://github.com/bfshi/TOAST), and [pyreft](https://github.com/stanfordnlp/pyreft). We thank the authors for their amazing work.

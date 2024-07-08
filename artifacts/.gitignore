@@ -1,5 +1,44 @@
 # Ignore everything
 *
 
-# Except this file
+# But not these files
 !.gitignore
+!CUB
+!CUB/gift/
+!CUB/gift/final/
+!CUB/gift/final/final/
+
+CUB/*/*/*/*
+!CUB/gift/final/final/last.pth.tar
+
+!nabirds
+!nabirds/gift/
+!nabirds/gift/final/
+!nabirds/gift/final/final/
+
+nabirds/*/*/*/*
+!nabirds/gift/final/final/last.pth.tar
+
+!StanfordCars
+!StanfordCars/gift/
+!StanfordCars/gift/final/
+!StanfordCars/gift/final/final/
+
+StanfordCars/*/*/*/*
+!StanfordCars/gift/final/final/last.pth.tar
+
+!StanfordDogs
+!StanfordDogs/gift/
+!StanfordDogs/gift/final/
+!StanfordDogs/gift/final/final/
+
+StanfordDogs/*/*/*/*
+!StanfordDogs/gift/final/final/last.pth.tar
+
+!OxfordFlowers
+!OxfordFlowers/gift/
+!OxfordFlowers/gift/final/
+!OxfordFlowers/gift/final/final/
+
+OxfordFlowers/*/*/*/*
+!OxfordFlowers/gift/final/final/last.pth.tar
