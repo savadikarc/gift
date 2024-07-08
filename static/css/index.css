@@ -2,10 +2,18 @@ body {
   font-family: 'Noto Sans', sans-serif;
 }
 
+a {
+  color: #a21942;
+}
+
+a:hover {
+  color: #a21942;
+  text-decoration: underline;
+}
 
 .footer .icon-link {
     font-size: 25px;
-    color: #000;
+    color: #000 ;
 }
 
 .link-block a {
@@ -19,8 +27,7 @@ body {
 
 
 .teaser .hero-body {
-  padding-top: 0;
-  padding-bottom: 3rem;
+  padding-top: 1rem;
 }
 
 .teaser {
@@ -71,7 +78,7 @@ body {
 }
 
 .publication-authors a {
-   color: hsl(204, 86%, 53%) !important;
+   color: #a21942 !important;
 }
 
 .publication-authors a:hover {
@@ -164,5 +171,59 @@ body {
 }
 
 .is-light a {
-  color: hsl(204, 86%, 53%) !important;
+  color: #a21942 !important;
+}
+
+.is-light a:hover {
+  text-decoration: underline;
+}
+
+.button:hover {
+  background-color: #a21942 !important; 
+  text-decoration: none;
+}
+
+.icon-link:hover {
+  color: #a21942 !important;
+  text-decoration: none;
+}
+
+.rounded {
+  border-radius: 0.5rem;
+}
+
+.center {
+  text-align: center;
+}
+
+.center h1 {
+  text-align: left;
+}
+
+.textbox {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.textbox .subtitle {
+  color: rgba(0, 0, 0, .9);
+}
+
+.textbox-white {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 10px;
+}
+
+.textbox-white .subtitle {
+  color: rgba(0, 0, 0, .9);
+}
+
+.tt {
+  font-family: Courier;
+}
+
+.hero-body {
+  padding: 1rem;
 }
