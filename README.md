@@ -14,7 +14,7 @@
 ## Citation
 ```bibtex
 @misc{savadikar2024gift,
-    title={GIFT: Generative Interpretable Fine-Tuning}, 
+    title={Generative Parameter-Efficient Fine-Tuning}, 
     author={Chinmay Savadikar and Xi Song and Tianfu Wu},
     year={2024},
     eprint={2312.00700},
