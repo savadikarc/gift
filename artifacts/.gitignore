@@ -4,41 +4,41 @@
 # But not these files
 !.gitignore
 !CUB
-!CUB/gift/
-!CUB/gift/final/
-!CUB/gift/final/final/
+!CUB/wegeft/
+!CUB/wegeft/final/
+!CUB/wegeft/final/final/
 
 CUB/*/*/*/*
-!CUB/gift/final/final/last.pth.tar
+!CUB/wegeft/final/final/last.pth.tar
 
 !nabirds
-!nabirds/gift/
-!nabirds/gift/final/
-!nabirds/gift/final/final/
+!nabirds/wegeft/
+!nabirds/wegeft/final/
+!nabirds/wegeft/final/final/
 
 nabirds/*/*/*/*
-!nabirds/gift/final/final/last.pth.tar
+!nabirds/wegeft/final/final/last.pth.tar
 
 !StanfordCars
-!StanfordCars/gift/
-!StanfordCars/gift/final/
-!StanfordCars/gift/final/final/
+!StanfordCars/wegeft/
+!StanfordCars/wegeft/final/
+!StanfordCars/wegeft/final/final/
 
 StanfordCars/*/*/*/*
-!StanfordCars/gift/final/final/last.pth.tar
+!StanfordCars/wegeft/final/final/last.pth.tar
 
 !StanfordDogs
-!StanfordDogs/gift/
-!StanfordDogs/gift/final/
-!StanfordDogs/gift/final/final/
+!StanfordDogs/wegeft/
+!StanfordDogs/wegeft/final/
+!StanfordDogs/wegeft/final/final/
 
 StanfordDogs/*/*/*/*
-!StanfordDogs/gift/final/final/last.pth.tar
+!StanfordDogs/wegeft/final/final/last.pth.tar
 
 !OxfordFlowers
-!OxfordFlowers/gift/
-!OxfordFlowers/gift/final/
-!OxfordFlowers/gift/final/final/
+!OxfordFlowers/wegeft/
+!OxfordFlowers/wegeft/final/
+!OxfordFlowers/wegeft/final/final/
 
 OxfordFlowers/*/*/*/*
-!OxfordFlowers/gift/final/final/last.pth.tar
+!OxfordFlowers/wegeft/final/final/last.pth.tar

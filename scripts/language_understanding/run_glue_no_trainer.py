@@ -58,7 +58,7 @@ try:
 except ImportError:
     setup_default_logging = None
 
-from gift.gift import GIFTConfig, GIFTWrapperForSeqClassification, BLOCK_PARAMS
+from wegeft.wegeft import WeGeFTConfig, WeGeFTWrapperForSeqClassification, BLOCK_PARAMS
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -243,55 +243,55 @@ def parse_args():
         action="store_true",
         help="Is the script being run for hyperparameter search?",
     )
-    # GIFT
-    group = parser.add_argument_group("GIFT parameters")
+    # WeGeFT
+    group = parser.add_argument_group("WeGeFT parameters")
     group.add_argument(
-        "--gift_rank",
+        "--wegeft_rank",
         type=int,
         default=32,
-        help="Rank r in GIFT.",
+        help="Rank r in WeGeFT.",
     )
     group.add_argument(
-        "--gift_dtype",
+        "--wegeft_dtype",
         type=str,
         default="float32",
-        help="dtype for GIFT.",
+        help="dtype for WeGeFT.",
     )
     group.add_argument(
-        "--gift_in_projection_bias",
+        "--wegeft_in_projection_bias",
         action="store_true",
         default=False,
-        help="Add bias to the the first linear projection in gift (phi).",
+        help="Add bias to the the first linear projection in wegeft (phi).",
     )
     group.add_argument(
-        "--gift_out_projection_bias",
+        "--wegeft_out_projection_bias",
         action="store_true",
         default=False,
-        help="Add bias to the the second linear projection in gift (psi).",
+        help="Add bias to the the second linear projection in wegeft (psi).",
     )
     group.add_argument(
-        "--gift_target_modules",
+        "--wegeft_target_modules",
         default=["query", "value"],
         type=str,
         nargs="+",
         help="Module to apply finetuning on.",
     )
     group.add_argument(
-        "--gift_enable_gift",
+        "--wegeft_enable_wegeft",
         default=None,
         type=str,
         nargs="+",
-        help="If target module is a fused layer (qkv in ViT), which modules to apply GIFT to? E.g., for applying GIFT to Q and V, use --gift_enable_gift q v.",
+        help="If target module is a fused layer (qkv in ViT), which modules to apply WeGeFT to? E.g., for applying WeGeFT to Q and V, use --wegeft_enable_wegeft q v.",
     )
     group.add_argument(
-        "--gift_share_projections",
+        "--wegeft_share_projections",
         action="store_true",
         default=False,
         help="Share the linear projection between modules.",
     )
-    group = parser.add_argument_group("GIFT Schema Block parameters")
+    group = parser.add_argument_group("WeGeFT Schema Block parameters")
     group.add_argument(
-        "--gift_block_block_type",
+        "--wegeft_block_block_type",
         type=str,
         default="simple_block",
         choices=["simple_block", "transformer", "pamcat_transformer", "mlp_mixer", "mlp"],
@@ -299,31 +299,31 @@ def parse_args():
     )
     # Transformer Block params
     group.add_argument(
-        "--gift_block_num_blocks",
+        "--wegeft_block_num_blocks",
         type=int,
         default=1,
-        help="Number of blocks in the chosen GIFT schema.",
+        help="Number of blocks in the chosen WeGeFT schema.",
     )
     group.add_argument(
-        "--gift_block_num_heads",
+        "--wegeft_block_num_heads",
         type=int,
         default=1,
         help="Number of attention heads in transformer, and pamcat_transformer.",
     )
     group.add_argument(
-        "--gift_block_mlp_ratio",
+        "--wegeft_block_mlp_ratio",
         type=float,
         default=2.,
         help="MLP ratio in transformer, pamcat_transformer, mlp and mlp_mixer",
     )
     group.add_argument(
-        "--gift_block_drop_path",
+        "--wegeft_block_drop_path",
         type=float,
         default=0.,
         help="Drop Path in blocks.",
     )
     group.add_argument(
-        "--gift_block_norm_layer",
+        "--wegeft_block_norm_layer",
         type=str,
         default="l2",
         choices=["l2", "none"],
@@ -331,13 +331,13 @@ def parse_args():
     )
     # PamCat
     group.add_argument(
-        "--gift_block_num_clusters",
+        "--wegeft_block_num_clusters",
         type=int,
         default=64,
         help="Number of clusters in pamcat_transformer.",
     )
     group.add_argument(
-        "--gift_block_cluster_activation",
+        "--wegeft_block_cluster_activation",
         type=str,
         default="sigmoid",
         choices=["sigmoid", "softmax"],
@@ -345,20 +345,20 @@ def parse_args():
     )
     # MLP Mixer
     group.add_argument(
-        "--gift_block_num_mixed_tokens",
+        "--wegeft_block_num_mixed_tokens",
         type=int,
         default=64,
         help="Number of mixed tokens in the the token mixing layer of mlp_mixer.",
     )
     group.add_argument(
-        "--gift_block_channel_mixing_ratio",
+        "--wegeft_block_channel_mixing_ratio",
         type=float,
         default=2.,
         help="MLP ratio as in transformers.",
     )
     # Simple down and up
     group.add_argument(
-        "--gift_block_act_layer",
+        "--wegeft_block_act_layer",
         type=str,
         default="identity",
         choices=["identity", "gelu", "sigmoid", ],
@@ -574,33 +574,33 @@ def get_best_hyperparameters(val_output_dir):
     return metrics[0]
 
 
-def build_gift(backbone, args):
+def build_wegeft(backbone, args):
 
     block_params = {
-        k.replace("gift_block_", ""): v for k, v in vars(args).items() if k.startswith("gift_block")
+        k.replace("wegeft_block_", ""): v for k, v in vars(args).items() if k.startswith("wegeft_block")
     }
     # Keep only the params that are needed for the current block type
     block_params = {k: v for k, v in block_params.items() if k in BLOCK_PARAMS[block_params["block_type"]].keys()}
 
-    share_projections = args.gift_share_projections and len(args.gift_target_modules) > 1
+    share_projections = args.wegeft_share_projections and len(args.wegeft_target_modules) > 1
 
     # Hack
-    enable_gift = None
-    if args.gift_enable_gift is not None and "qkv" in args.gift_target_modules:
-        enable_gift = {"qkv": [k in args.gift_enable_gift for k in ["q", "k", "v"]]}
-        share_projections = args.gift_share_projections and (share_projections or sum(enable_gift["qkv"])>1)
+    enable_wegeft = None
+    if args.wegeft_enable_wegeft is not None and "qkv" in args.wegeft_target_modules:
+        enable_wegeft = {"qkv": [k in args.wegeft_enable_wegeft for k in ["q", "k", "v"]]}
+        share_projections = args.wegeft_share_projections and (share_projections or sum(enable_wegeft["qkv"])>1)
     
-    config = GIFTConfig(
-        rank=args.gift_rank,
-        dtype=args.gift_dtype,
-        gift_parameters=block_params,
-        in_projection_bias=args.gift_in_projection_bias,
-        out_projection_bias=args.gift_out_projection_bias,
-        target_modules=args.gift_target_modules,
-        enable_gift=enable_gift,
-        share_projections=args.gift_share_projections,
+    config = WeGeFTConfig(
+        rank=args.wegeft_rank,
+        dtype=args.wegeft_dtype,
+        wegeft_parameters=block_params,
+        in_projection_bias=args.wegeft_in_projection_bias,
+        out_projection_bias=args.wegeft_out_projection_bias,
+        target_modules=args.wegeft_target_modules,
+        enable_wegeft=enable_wegeft,
+        share_projections=args.wegeft_share_projections,
     )
-    model = GIFTWrapperForSeqClassification(
+    model = WeGeFTWrapperForSeqClassification(
         config,
         backbone, 
     )
@@ -613,7 +613,7 @@ def main():
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     send_example_telemetry("run_glue_no_trainer", args)
 
-    args.output_dir = args.output_dir + f"/{args.model_name_or_path.split('/')[-1]}/embed_{args.gift_rank}"
+    args.output_dir = args.output_dir + f"/{args.model_name_or_path.split('/')[-1]}/embed_{args.wegeft_rank}"
     val_output_dir = os.path.join(args.output_dir, "val")
     test_output_dir = os.path.join(args.output_dir, "test")
 
@@ -759,8 +759,8 @@ def main():
     model.requires_grad_(False)
     model.classifier.requires_grad_(True)
 
-    # Initialize GIFT
-    wrapped_model = build_gift(model, args)
+    # Initialize WeGeFT
+    wrapped_model = build_wegeft(model, args)
 
     logger.info(f"{wrapped_model}")
     num_trainable, percent_trainable = wrapped_model.num_trainable_parameters()
@@ -877,12 +877,12 @@ def main():
     logger.info(f"WD: {args.weight_decay}, Cls WD: {args.classifier_weight_decay}")
     optimizer_grouped_parameters = [
         {
-            "params": [p for n, p in wrapped_model.gift_named_parameters() if not any(nd in n for nd in no_decay)],
+            "params": [p for n, p in wrapped_model.wegeft_named_parameters() if not any(nd in n for nd in no_decay)],
             "lr": args.learning_rate,
             "weight_decay": args.weight_decay,
         },
         {
-            "params": [p for n, p in wrapped_model.gift_named_parameters() if any(nd in n for nd in no_decay)],
+            "params": [p for n, p in wrapped_model.wegeft_named_parameters() if any(nd in n for nd in no_decay)],
             "lr": args.learning_rate,
             "weight_decay": 0.0,
         },

@@ -12,13 +12,13 @@ import torch.nn.functional as F
 from transformers import PreTrainedModel
 from .hypernet import Hypernet, BLOCK_FNS
 
-from .configuration_gift import GIFTConfig
+from .configuration_wegeft import WeGeFTConfig
 
 _logger = logging.getLogger(__name__)
 
 
-class GIFTLinear(nn.Linear):
-    # GIFT implemented in a dense layer
+class WeGeFTLinear(nn.Linear):
+    # WeGeFT implemented in a dense layer
     def __init__(
         self, 
         in_features: int, 
@@ -54,8 +54,8 @@ class GIFTLinear(nn.Linear):
         return result
     
 
-class GIFTMergedLinear(GIFTLinear):
-    # GIFT implemented in a dense layer
+class WeGeFTMergedLinear(WeGeFTLinear):
+    # WeGeFT implemented in a dense layer
     def __init__(
         self, 
         in_features: int, 
@@ -143,11 +143,11 @@ dtype_mapping = {
 }
 
 
-class GIFTWrapper(nn.Module):
+class WeGeFTWrapper(nn.Module):
 
     def __init__(
             self, 
-            config: GIFTConfig,
+            config: WeGeFTConfig,
             backbone: Union[PreTrainedModel, nn.Module],
         ) -> None:
         super().__init__()
@@ -156,16 +156,16 @@ class GIFTWrapper(nn.Module):
         self.backbone = backbone
         self.backbone.requires_grad_(False)
 
-        self.gift_dtype = getattr(config, "dtype", None)
-        if self.gift_dtype is not None:
-            self.gift_dtype = dtype_mapping[self.gift_dtype]
+        self.wegeft_dtype = getattr(config, "dtype", None)
+        if self.wegeft_dtype is not None:
+            self.wegeft_dtype = dtype_mapping[self.wegeft_dtype]
 
-        self.num_layers = self.init_gift(config, backbone)
+        self.num_layers = self.init_wegeft(config, backbone)
 
-    def _init_gift_for_single_module(self, config: GIFTConfig, model, target_key):
+    def _init_wegeft_for_single_module(self, config: WeGeFTConfig, model, target_key):
 
-        gift_block_fn = BLOCK_FNS[config.gift_parameters["block_type"]]
-        gift_block_parameters = {k:v for k, v in config.gift_parameters.items() if k != "block_type"}
+        wegeft_block_fn = BLOCK_FNS[config.wegeft_parameters["block_type"]]
+        wegeft_block_parameters = {k:v for k, v in config.wegeft_parameters.items() if k != "block_type"}
 
         key_list = [key for key, _ in model.named_modules()]
         
@@ -188,7 +188,7 @@ class GIFTWrapper(nn.Module):
             
             num_layers += 1
 
-            # Replace the target module with GIFTLinear
+            # Replace the target module with WeGeFTLinear
             new_module = self.create_and_replace_module(parent, target_name, target)
 
             # Attach hooks
@@ -203,16 +203,16 @@ class GIFTWrapper(nn.Module):
         if not config.share_projections:
             self.in_projections[target_key] = self.get_projection(in_features, config.rank, config.in_projection_bias)
             self.out_projections[target_key] = self.get_projection(config.rank, in_features, config.out_projection_bias, zero_init=True)
-            if config.gift_parameters["block_type"] == "mlp_mixer":
-                gift_block_parameters["num_tokens"] = out_features
-            self.hypernets[target_key] = Hypernet(gift_block_fn, rank=config.rank, **gift_block_parameters)
+            if config.wegeft_parameters["block_type"] == "mlp_mixer":
+                wegeft_block_parameters["num_tokens"] = out_features
+            self.hypernets[target_key] = Hypernet(wegeft_block_fn, rank=config.rank, **wegeft_block_parameters)
 
         return num_layers, in_features, out_features
     
-    def _init_gift_for_merged_modules(self, config: GIFTConfig, model, target_key, enable_gift):
+    def _init_wegeft_for_merged_modules(self, config: WeGeFTConfig, model, target_key, enable_wegeft):
 
-        gift_block_fn = BLOCK_FNS[config.gift_parameters["block_type"]]
-        gift_block_parameters = {k:v for k, v in config.gift_parameters.items() if k != "block_type"}
+        wegeft_block_fn = BLOCK_FNS[config.wegeft_parameters["block_type"]]
+        wegeft_block_parameters = {k:v for k, v in config.wegeft_parameters.items() if k != "block_type"}
 
         key_list = [key for key, _ in model.named_modules()]
         
@@ -229,16 +229,16 @@ class GIFTWrapper(nn.Module):
             target_key_components = target_sub_keys = list(target_key)
 
         num_layers = 0
-        module_in_features = {sub_key: set() for sub_key, enable in zip(target_sub_keys, enable_gift) if enable}
-        module_out_features = {sub_key: set() for sub_key, enable in zip(target_sub_keys, enable_gift) if enable}
-        hypernets = {sub_key: nn.ModuleList() for sub_key, enable in zip(target_sub_keys, enable_gift) if enable}
+        module_in_features = {sub_key: set() for sub_key, enable in zip(target_sub_keys, enable_wegeft) if enable}
+        module_out_features = {sub_key: set() for sub_key, enable in zip(target_sub_keys, enable_wegeft) if enable}
+        hypernets = {sub_key: nn.ModuleList() for sub_key, enable in zip(target_sub_keys, enable_wegeft) if enable}
         hook_handles = []
         for layer, (parent, target, target_name) in enumerate(target_modules):
             assert isinstance(target, nn.Linear), f"Only linear layers are supported for now, got {type(target)}"
             
             in_features = target.in_features
             out_features = target.out_features // len(target_sub_keys)
-            for sub_key, enabled in zip(target_sub_keys, enable_gift):
+            for sub_key, enabled in zip(target_sub_keys, enable_wegeft):
                 if not enabled:
                     continue
                 module_in_features[sub_key].add(in_features)
@@ -248,24 +248,24 @@ class GIFTWrapper(nn.Module):
             
             num_layers += 1
 
-            # Replace the target module with GIFTLinear
-            new_module = self.create_and_replace_module(parent, target_name, target, enable_gift=enable_gift)
+            # Replace the target module with WeGeFTLinear
+            new_module = self.create_and_replace_module(parent, target_name, target, enable_wegeft=enable_wegeft)
 
             # Attach hooks
             _logger.info(f"Attaching hook to {target_key}, {target_name}, layer {layer}")
-            handle = new_module.register_forward_pre_hook(self.residual_forward_hook_merged(target_key, target_sub_keys, enable_gift, layer), with_kwargs=True)
+            handle = new_module.register_forward_pre_hook(self.residual_forward_hook_merged(target_key, target_sub_keys, enable_wegeft, layer), with_kwargs=True)
             hook_handles.append(handle)
 
             # Initialize the hypernet for the layer
-            if config.gift_parameters["block_type"] == "mlp_mixer":
-                gift_block_parameters["num_tokens"] = out_features
-            for sub_key, enabled in zip(target_sub_keys, enable_gift):
+            if config.wegeft_parameters["block_type"] == "mlp_mixer":
+                wegeft_block_parameters["num_tokens"] = out_features
+            for sub_key, enabled in zip(target_sub_keys, enable_wegeft):
                 if not enabled:
                     continue
-                hypernets[sub_key].append(Hypernet(gift_block_fn, rank=config.rank, **gift_block_parameters))
+                hypernets[sub_key].append(Hypernet(wegeft_block_fn, rank=config.rank, **wegeft_block_parameters))
 
         self.hook_handles[target_key] = hook_handles
-        for sub_key, enable in zip(target_sub_keys, enable_gift):
+        for sub_key, enable in zip(target_sub_keys, enable_wegeft):
             if not enable:
                 continue
             self.hypernets[sub_key] = hypernets[sub_key]
@@ -279,7 +279,7 @@ class GIFTWrapper(nn.Module):
 
         return num_layers, in_features, out_features
 
-    def init_gift(self, config, model):
+    def init_wegeft(self, config, model):
         config = self.config
 
         self.in_projections = nn.ModuleDict()
@@ -288,31 +288,31 @@ class GIFTWrapper(nn.Module):
         self.hook_handles = dict()
 
         for target_key in config.target_modules:
-            enable_gift = None
-            if config.enable_gift is not None:
-                enable_gift = config.enable_gift.get(target_key, None)
+            enable_wegeft = None
+            if config.enable_wegeft is not None:
+                enable_wegeft = config.enable_wegeft.get(target_key, None)
 
-            if enable_gift is None:
-                num_layers, in_features, out_features = self._init_gift_for_single_module(config, model, target_key)
+            if enable_wegeft is None:
+                num_layers, in_features, out_features = self._init_wegeft_for_single_module(config, model, target_key)
             else:
-                num_layers, in_features, out_features = self._init_gift_for_merged_modules(config, model, target_key, enable_gift)
+                num_layers, in_features, out_features = self._init_wegeft_for_merged_modules(config, model, target_key, enable_wegeft)
 
             if config.share_projections:
                 self.in_projections["shared_projection"] = self.get_projection(in_features, config.rank, config.in_projection_bias)
                 self.out_projections["shared_projection"] = self.get_projection(config.rank, in_features, config.out_projection_bias, zero_init=True)
 
-                gift_block_fn = BLOCK_FNS[config.gift_parameters["block_type"]]
-                gift_block_parameters = {k:v for k, v in config.gift_parameters.items() if k != "block_type"}
+                wegeft_block_fn = BLOCK_FNS[config.wegeft_parameters["block_type"]]
+                wegeft_block_parameters = {k:v for k, v in config.wegeft_parameters.items() if k != "block_type"}
 
-                if config.gift_parameters["block_type"] == "mlp_mixer":
-                    gift_block_parameters["num_tokens"] = out_features
-                self.hypernets["shared_projection"] = Hypernet(gift_block_fn, rank=config.rank, **gift_block_parameters)
+                if config.wegeft_parameters["block_type"] == "mlp_mixer":
+                    wegeft_block_parameters["num_tokens"] = out_features
+                self.hypernets["shared_projection"] = Hypernet(wegeft_block_fn, rank=config.rank, **wegeft_block_parameters)
 
         # Cast the model to the hypernet dtype
-        if self.gift_dtype is not None:
-            self.in_projections.to(dtype=self.gift_dtype)
-            self.out_projections.to(dtype=self.gift_dtype)
-            self.hypernets.to(dtype=self.gift_dtype)
+        if self.wegeft_dtype is not None:
+            self.in_projections.to(dtype=self.wegeft_dtype)
+            self.out_projections.to(dtype=self.wegeft_dtype)
+            self.hypernets.to(dtype=self.wegeft_dtype)
 
         return num_layers
     
@@ -324,21 +324,21 @@ class GIFTWrapper(nn.Module):
                 nn.init.zeros_(projection.bias)
         return projection
     
-    def create_and_replace_module(self, parent, target_name, target, enable_gift=None):
-        new_module = self.create_new_module(target, target_name, enable_gift=enable_gift)
+    def create_and_replace_module(self, parent, target_name, target, enable_wegeft=None):
+        new_module = self.create_new_module(target, target_name, enable_wegeft=enable_wegeft)
         self._replace_module(parent, target_name, new_module)
         return new_module
     
     def _replace_module(self, parent, target_name, new_module):
         setattr(parent, target_name, new_module)
 
-    def create_new_module(self, target, target_name, enable_gift=None):
+    def create_new_module(self, target, target_name, enable_wegeft=None):
         in_features = target.in_features
         out_features = target.out_features
-        if enable_gift is None:
-            new_module = GIFTLinear(in_features, out_features, bias=target.bias is not None, name=target_name)
+        if enable_wegeft is None:
+            new_module = WeGeFTLinear(in_features, out_features, bias=target.bias is not None, name=target_name)
         else:
-            new_module = GIFTMergedLinear(in_features, out_features, bias=target.bias is not None, enable=enable_gift, name=target_name)
+            new_module = WeGeFTMergedLinear(in_features, out_features, bias=target.bias is not None, enable=enable_wegeft, name=target_name)
         if new_module.weight.dtype != target.weight.dtype:
             new_module = new_module.to(dtype=target.weight.dtype)
         new_module.weight.data.copy_(target.weight)
@@ -347,11 +347,11 @@ class GIFTWrapper(nn.Module):
         return new_module
     
     @torch.cuda.amp.autocast(enabled=False)
-    def _gift_forward(self, target_key, layer, weight):
-        cast_weights = self.gift_dtype is not None and weight.dtype != self.gift_dtype
+    def _wegeft_forward(self, target_key, layer, weight):
+        cast_weights = self.wegeft_dtype is not None and weight.dtype != self.wegeft_dtype
         if cast_weights:
             org_type = weight.dtype
-            weight = weight.to(dtype=self.gift_dtype)
+            weight = weight.to(dtype=self.wegeft_dtype)
         projection_key = target_key if not self.config.share_projections else "shared_projection"
         compressed_weight = self.in_projections[projection_key](weight)
         compressed_weight = self.hypernets[projection_key](compressed_weight)
@@ -364,20 +364,20 @@ class GIFTWrapper(nn.Module):
     
     def residual_forward_hook(self, target_key, layer):
         def hook(module, input, kwargs):
-            assert isinstance(module, GIFTLinear), f"Layer must be GIFTLinear, got {type(module)}."
-            delta_weight = self._gift_forward(target_key, layer, module.weight.data)
+            assert isinstance(module, WeGeFTLinear), f"Layer must be WeGeFTLinear, got {type(module)}."
+            delta_weight = self._wegeft_forward(target_key, layer, module.weight.data)
             kwargs["delta_weight"] = delta_weight
             return input, kwargs
         return hook
     
-    def residual_forward_hook_merged(self, target_key, target_sub_keys, enable_gift, layer):
+    def residual_forward_hook_merged(self, target_key, target_sub_keys, enable_wegeft, layer):
         def hook(module, input, kwargs):
-            assert isinstance(module, GIFTMergedLinear), f"Layer must be GIFTLinear, got {type(module)}."
+            assert isinstance(module, WeGeFTMergedLinear), f"Layer must be WeGeFTLinear, got {type(module)}."
             delta_weights = []
-            for idx, (sub_key, enable) in enumerate(zip(target_sub_keys, enable_gift)):
+            for idx, (sub_key, enable) in enumerate(zip(target_sub_keys, enable_wegeft)):
                 _weight = module.get_weight(idx)
                 if enable:
-                    delta_weight = self._gift_forward(sub_key, layer, _weight)
+                    delta_weight = self._wegeft_forward(sub_key, layer, _weight)
                 else:
                     delta_weight = torch.zeros_like(_weight)
                 delta_weights.append(delta_weight)
@@ -401,10 +401,10 @@ class GIFTWrapper(nn.Module):
         x = self.backbone(*args, **kwargs)
         return x
 
-    def gift_parameters(self):
+    def wegeft_parameters(self):
         return [p for n, p in self.named_parameters() if "backbone" not in n]
     
-    def gift_named_parameters(self):
+    def wegeft_named_parameters(self):
         return [(n, p) for n, p in self.named_parameters() if "backbone" not in n]
 
     def num_trainable_parameters(self):
@@ -414,11 +414,11 @@ class GIFTWrapper(nn.Module):
         return num_trainable_parameters, percent_trainable
     
 
-class GIFTWrapperForImageClassification(GIFTWrapper):
+class WeGeFTWrapperForImageClassification(WeGeFTWrapper):
 
     def __init__(
             self, 
-            config: GIFTConfig,
+            config: WeGeFTConfig,
             backbone: Union[PreTrainedModel, nn.Module],
         ) -> None:
         super().__init__(config, backbone)
@@ -441,11 +441,11 @@ class GIFTWrapperForImageClassification(GIFTWrapper):
         return state_dict
 
 
-class GIFTWrapperForSeqClassification(GIFTWrapper):
+class WeGeFTWrapperForSeqClassification(WeGeFTWrapper):
 
     def __init__(
             self, 
-            config: GIFTConfig,
+            config: WeGeFTConfig,
             backbone: Union[PreTrainedModel, nn.Module],
         ) -> None:
         super().__init__(config, backbone)
@@ -474,7 +474,7 @@ class GIFTWrapperForSeqClassification(GIFTWrapper):
         return num_trainable_parameters, percent_trainable
     
 
-class GIFTWrapperForCausalLM(GIFTWrapper):
+class WeGeFTWrapperForCausalLM(WeGeFTWrapper):
 
     def forward(
             self, 

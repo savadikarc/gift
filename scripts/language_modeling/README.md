@@ -17,13 +17,13 @@ sh load_datasets.sh
 As described in our Appendix A in the paper, we follow LoReFT and use the last 300 samples from the GSM8k training data to tune the hyperparameters. An example script to tune the hyperparameters:
 
 ```sh
-./run_gsm8k.sh <GPU_ID> 2.5e-4 meta-llama/Meta-Llama-3-8B --gift_rank 64
+./run_gsm8k.sh <GPU_ID> 2.5e-4 meta-llama/Meta-Llama-3-8B --wegeft_rank 64
 ```
-`<GPU_ID>` is the numeric ID of the GPU to be used (e.g., for cuda:0, use `<GPU_ID>` as `0`). Replace `2.5e-4` with the desired learning rate. The `meta-llama/Meta-Llama-3-8B` is the model you want to use (replace this with `yahma/llama-7b-hf` or `meta-llama/Llama-2-7b-hf` to run with LLaMa-1 Llama 2 respectively). The `--gift_rank 64` is the rank of the GIFT. The range of hyperparameters is given in Table 7 in the Appendix.
+`<GPU_ID>` is the numeric ID of the GPU to be used (e.g., for cuda:0, use `<GPU_ID>` as `0`). Replace `2.5e-4` with the desired learning rate. The `meta-llama/Meta-Llama-3-8B` is the model you want to use (replace this with `yahma/llama-7b-hf` or `meta-llama/Llama-2-7b-hf` to run with LLaMa-1 Llama 2 respectively). The `--wegeft_rank 64` is the rank of the WeGeFT. The range of hyperparameters is given in Table 7 in the Appendix.
 
 The following script runs the commonsense reasoning task based on the hyperparameters found in the previous step:
 ```bash
-./run_commonsense.sh <GPU_ID> 2.5e-4 <SEED> meta-llama/Meta-Llama-3-8B --gift_rank 64
+./run_commonsense.sh <GPU_ID> 2.5e-4 <SEED> meta-llama/Meta-Llama-3-8B --wegeft_rank 64
 ```
 We report the average across 3 runs with seeds `42`, `43` and `44`. We use the same hyperparameters as those found for LLaMa-1 for Llama 2 and Llama3.
 
@@ -31,7 +31,7 @@ We report the average across 3 runs with seeds `42`, `43` and `44`. We use the s
 
 We use the same hyperparameters as those found on the GSM8k dataset. The following script runs the math reasoning task:
 ```bash
-./run_math.sh <GPU_ID> 2.5e-4 <SEED> yahma/llama-7b-hf --gift_rank 64
+./run_math.sh <GPU_ID> 2.5e-4 <SEED> yahma/llama-7b-hf --wegeft_rank 64
 ```
 We report the average across 3 runs with seeds `42`, `43` and `44`.
 
@@ -40,13 +40,13 @@ Following ReFT, we use Alpaca-52k for hyperparameter tuning for learning rate an
 
 An example script to tune the hyperparameters using Alpaca52k:
 ```sh
-./run_alpaca52k.sh <GPU_ID> <LR> <SEED> yahma/llama-7b-hf --gift_rank <RANK>
+./run_alpaca52k.sh <GPU_ID> <LR> <SEED> yahma/llama-7b-hf --wegeft_rank <RANK>
 ```
 We set the seed to 42 during hyperparameter tuning.
 
 To run instruction tuning with ultrafeedback, use
 ```sh
-./run_ultrafeedback.sh <GPU_ID> <LR> <SEED> meta-llama/Llama-2-7b-hf --gift_rank <RANK>
+./run_ultrafeedback.sh <GPU_ID> <LR> <SEED> meta-llama/Llama-2-7b-hf --wegeft_rank <RANK>
 ```
 We set the seed to 42 and 43 for the final runs.
 

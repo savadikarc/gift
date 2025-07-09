@@ -9,16 +9,16 @@ with open('requirements.txt', 'r', encoding='utf-8') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name="gift",
+    name="wegeft",
     version="0.0.1",
-    description="GIFT: Generative Interpretable Fine-Tuning",
+    description="WeGeFT: Generative Interpretable Fine-Tuning",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url="https://github.com/savadikarc/gift",
+    url="https://github.com/savadikarc/wegeft",
     author="Chinmay Savadikar",
     author_email="csavadi@ncsu.edu",
     license="MIT License",
-    packages=find_packages(include=['gift', 'gift.*']),
+    packages=find_packages(include=['wegeft', 'wegeft.*']),
     python_requires='>=3.8',
     install_requires=requirements,
     extras_require={},

@@ -6,11 +6,11 @@ SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 EXECUTION_DIR="$SCRIPT_DIR/../../.."
 
-UTILS_DIR="$EXECUTION_DIR/gift_experiment_utils"
+UTILS_DIR="$EXECUTION_DIR/wegeft_experiment_utils"
 
 export PYTHONPATH=$PYTHONPATH:$UTILS_DIR
 
-METHOD=gift
+METHOD=wegeft
 DATASET=$1
 GPUS=$2
 BACKBONE=$3

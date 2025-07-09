@@ -56,19 +56,19 @@ BLOCK_PARAMS = {
 }
 
 
-class GIFTConfig(PretrainedConfig):
-    model_type = 'gift'
+class WeGeFTConfig(PretrainedConfig):
+    model_type = 'wegeft'
     _auto_class = 'AutoConfig'
 
     def __init__(
             self,
             rank: int = 16,
             dtype: str = "float32",
-            gift_parameters: Optional[Dict] = SIMPLE_BLOCK_PARAMS,
+            wegeft_parameters: Optional[Dict] = SIMPLE_BLOCK_PARAMS,
             in_projection_bias: bool = False,
             out_projection_bias: bool = False,
             target_modules: Optional[Union[List[str], str]] = None,
-            enable_gift: Optional[Dict[str, bool]] = None,
+            enable_wegeft: Optional[Dict[str, bool]] = None,
             share_projections: bool = False,
             layers_to_transform: Optional[Union[List[int], int]] = None,
             layers_pattern: Optional[Union[List[str], str]] = None,
@@ -76,11 +76,11 @@ class GIFTConfig(PretrainedConfig):
     ):
         self.rank = rank
         self.dtype = dtype
-        self.gift_parameters = gift_parameters
+        self.wegeft_parameters = wegeft_parameters
         self.in_projection_bias = in_projection_bias
         self.out_projection_bias = out_projection_bias
         self.target_modules = target_modules
-        self.enable_gift = enable_gift
+        self.enable_wegeft = enable_wegeft
         self.share_projections = share_projections
         self.layers_to_transform = layers_to_transform
         self.layers_pattern = layers_pattern

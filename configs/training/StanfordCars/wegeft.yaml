@@ -18,17 +18,17 @@ no_aug: true
 smoothing: 0.0
 no_prefetcher: True
 drop_path: 0.1
-gift_rank: 16
-gift_dtype: "float32"
-gift_in_projection_bias: false
-gift_out_projection_bias: false
-gift_target_modules:
+wegeft_rank: 16
+wegeft_dtype: "float32"
+wegeft_in_projection_bias: false
+wegeft_out_projection_bias: false
+wegeft_target_modules:
   - attn:proj
-gift_block_block_type: simple_block
-gift_block_num_blocks: 1
-gift_block_num_heads: 1
-gift_block_mlp_ratio: 2.0
-gift_block_drop_path: 0.0
-gift_block_norm_layer: "l2"
-gift_block_num_clusters: 64
-gift_block_cluster_activation: "sigmoid"
+wegeft_block_block_type: simple_block
+wegeft_block_num_blocks: 1
+wegeft_block_num_heads: 1
+wegeft_block_mlp_ratio: 2.0
+wegeft_block_drop_path: 0.0
+wegeft_block_norm_layer: "l2"
+wegeft_block_num_clusters: 64
+wegeft_block_cluster_activation: "sigmoid"

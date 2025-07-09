@@ -6,14 +6,14 @@ SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 EXECUTION_DIR="$SCRIPT_DIR/../../.."
 
-UTILS_DIR="$EXECUTION_DIR/gift_experiment_utils"
+UTILS_DIR="$EXECUTION_DIR/wegeft_experiment_utils"
 
 export PYTHONPATH=$PYTHONPATH:$UTILS_DIR
 
 METHOD=$1
 DATASET=$2
-EXP_NAME=$3
-GPUS=$4
+GPUS=$3
+EXP_NAME=$4
 BACKBONE=$5
 
 NUM_GPUS=1

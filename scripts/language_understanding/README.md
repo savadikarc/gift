@@ -4,9 +4,9 @@ This directory contains the scripts to finetune RoBERTa-Base and RoBERTa-Large o
 The following scripts will run the hyperparameter search (with seed 42) and final run with 5 seeds (42, 43, 44, 45, 46). GLUE dataset will downloaded automatically using HuggingFace datasets library.
 ```sh
 # RoBERTa-Base
-./run_glue_base.sh <TASK_NAME> <GPU_ID> <EPOCHS> --gift_rank 32
+./run_glue_base.sh <TASK_NAME> <GPU_ID> <EPOCHS> --wegeft_rank 32
 # RoBERTa-Large
-./run_glue_large.sh <TASK_NAME> <GPU_ID> <EPOCHS> --gift_rank 32
+./run_glue_large.sh <TASK_NAME> <GPU_ID> <EPOCHS> --wegeft_rank 32
 ```
 - ```<TASK_NAME>``` can take values ```cola```, ```mrpc```, ```qnli```, ```rte```, ```sst2``` or ```stsb```
 - The number of training epochs for each task is given in Table 9 in the Appendix.

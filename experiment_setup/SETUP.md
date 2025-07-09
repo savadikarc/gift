@@ -3,13 +3,13 @@
 We recommend using Anaconda. Run the following commands to create a new conda environment and install the required packages.
 
 ```sh
-conda create -n gift python=3.9.19
-conda activate gift
+conda create -n wegeft python=3.9.19
+conda activate wegeft
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
 # or, if you have CUDA 11.1
 # conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
 
-# Install GIFT
+# Install WeGeFT
 pip install -e .
 
 cd experiment_setup

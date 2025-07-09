@@ -21,10 +21,10 @@ from timm.models import (
 )
 from timm.utils import ApexScaler, NativeScaler
 
-from visual_classification_utils.configs.config import get_cfg, BENCHMARK_NUM_CLASSES
-from visual_classification_utils.data import loader as data_loader
+from wegeft.visual_classification_utils.configs.config import get_cfg, BENCHMARK_NUM_CLASSES
+from wegeft.visual_classification_utils.data import loader as data_loader
 
-from gift.model_builder import build_model
+from wegeft.model_builder import build_model
 
 try:
     from apex import amp
@@ -338,7 +338,7 @@ group.add_argument(
     "--method", 
     type=str, 
     default="", 
-    choices=["gift", "lora", "vpt", "bitfit"],
+    choices=["wegeft", "lora", "vpt", "bitfit"],
     help="Finetuning method."
 )
 group.add_argument(
@@ -354,48 +354,48 @@ group.add_argument(
     help="Auto scale the LR",
 )
 
-# GIFT
-group = parser.add_argument_group("GIFT parameters")
+# WeGeFT
+group = parser.add_argument_group("WeGeFT parameters")
 group.add_argument(
-    "--gift_rank",
+    "--wegeft_rank",
     type=int,
     default=16,
-    help="Rank r in GIFT.",
+    help="Rank r in WeGeFT.",
 )
 group.add_argument(
-    "--gift_dtype",
+    "--wegeft_dtype",
     type=str,
     default="float32",
-    help="dtype for GIFT.",
+    help="dtype for WeGeFT.",
 )
 group.add_argument(
-    "--gift_in_projection_bias",
+    "--wegeft_in_projection_bias",
     action="store_true",
     default=False,
-    help="Add bias to the the first linear projection in gift (phi).",
+    help="Add bias to the the first linear projection in wegeft (phi).",
 )
 group.add_argument(
-    "--gift_out_projection_bias",
+    "--wegeft_out_projection_bias",
     action="store_true",
     default=False,
-    help="Add bias to the the second linear projection in gift (psi).",
+    help="Add bias to the the second linear projection in wegeft (psi).",
 )
 group.add_argument(
-    "--gift_target_modules",
+    "--wegeft_target_modules",
     default=["attn:proj"],
     type=str,
     nargs="+",
     help="Module to apply finetuning on (also used for determining LoRA modules).",
 )
 group.add_argument(
-    "--gift_enable_gift",
+    "--wegeft_enable_wegeft",
     default=None,
     type=str,
     nargs="+",
-    help="If target module is a fused layer (qkv in ViT), which modules to apply GIFT to? E.g., for applying GIFT to Q and V, use --gift_enable_gift q v.",
+    help="If target module is a fused layer (qkv in ViT), which modules to apply WeGeFT to? E.g., for applying WeGeFT to Q and V, use --wegeft_enable_wegeft q v.",
 )
 group.add_argument(
-    "--gift_share_projections",
+    "--wegeft_share_projections",
     action="store_true",
     default=False,
     help="Share the linear projection between modules.",
@@ -404,7 +404,7 @@ group.add_argument(
 # Hypernet Block parameters
 group = parser.add_argument_group("Hypernet Block parameters")
 group.add_argument(
-    "--gift_block_block_type",
+    "--wegeft_block_block_type",
     type=str,
     default="simple_block",
     choices=["simple_block", "transformer", "pamcat_transformer", "mlp_mixer", "mlp"],
@@ -412,44 +412,44 @@ group.add_argument(
 )
 # Transformer Block params
 group.add_argument(
-    "--gift_block_num_blocks",
+    "--wegeft_block_num_blocks",
     type=int,
     default=1,
-    help="Number of blocks in the chosen GIFT schema.",
+    help="Number of blocks in the chosen WeGeFT schema.",
 )
 group.add_argument(
-    "--gift_block_num_heads",
+    "--wegeft_block_num_heads",
     type=int,
     default=1,
     help="Number of attention heads in transformer, and pamcat_transformer.",
 )
 group.add_argument(
-    "--gift_block_mlp_ratio",
+    "--wegeft_block_mlp_ratio",
     type=float,
     default=2.,
     help="MLP ratio in transformer, pamcat_transformer, mlp and mlp_mixer",
 )
 group.add_argument(
-    "--gift_block_drop_path",
+    "--wegeft_block_drop_path",
     type=float,
     default=0.,
     help="Drop Path in blocks.",
 )
 group.add_argument(
-    "--gift_block_norm_layer",
+    "--wegeft_block_norm_layer",
     type=str,
     default="l2",
     choices=["l2", "none"],
     help="Normalization in the blocks.",
 )
 group.add_argument(
-    "--gift_block_num_clusters",
+    "--wegeft_block_num_clusters",
     type=int,
     default=64,
     help="Number of clusters in pamcat_transformer.",
 )
 group.add_argument(
-    "--gift_block_cluster_activation",
+    "--wegeft_block_cluster_activation",
     type=str,
     default="sigmoid",
     choices=["sigmoid", "softmax"],
@@ -457,20 +457,20 @@ group.add_argument(
 )
 # MLP Mixer
 group.add_argument(
-    "--gift_block_num_mixed_tokens",
+    "--wegeft_block_num_mixed_tokens",
     type=int,
     default=64,
     help="Number of mixed tokens in the the token mixing layer of mlp_mixer.",
 )
 group.add_argument(
-    "--gift_block_channel_mixing_ratio",
+    "--wegeft_block_channel_mixing_ratio",
     type=float,
     default=2.,
     help="MLP ratio as in transformers.",
 )
 # Simple down and up
 group.add_argument(
-    "--gift_block_act_layer",
+    "--wegeft_block_act_layer",
     type=str,
     default="identity",
     choices=["identity", "gelu", "sigmoid", ],
@@ -557,16 +557,16 @@ def main():
         exp_name = args.experiment
     else:
         eval_type = "test" if args.evaluate else "val"
-        gift_modules = "-".join(args.gift_modules)
+        wegeft_modules = "-".join(args.wegeft_modules)
         exp_name = "-".join(
             [
                 args.method+method_suffix,
-                gift_modules,
+                wegeft_modules,
                 eval_type,
                 str(args.lr_base),
                 str(args.lr_base),
                 str(args.weight_decay),
-                str(args.gift_downsample_ratio),
+                str(args.wegeft_downsample_ratio),
                 datetime.now().strftime("%Y%m%d-%H%M%S"),
             ]
         )

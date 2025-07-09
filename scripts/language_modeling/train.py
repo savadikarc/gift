@@ -1,6 +1,8 @@
 import os
 import torch
 import argparse
+from typing import Dict
+
 from tqdm import tqdm, trange
 from transformers import (
     Trainer,
@@ -14,7 +16,9 @@ from transformers import (
     set_seed,
     TrainingArguments
 )
-from transformers.trainer_utils import EvalPrediction
+from transformers.trainer_utils import EvalPrediction, is_torch_xla_available
+if is_torch_xla_available():
+    import torch_xla.core.xla_model as xm
 import wandb
 import evaluate
 import datetime
@@ -44,7 +48,7 @@ from pyreft import (
     ReftDataCollator
 )
 
-from gift.gift import GIFTConfig, GIFTWrapperForCausalLM, BLOCK_PARAMS
+from wegeft.wegeft import WeGeFTConfig, WeGeFTWrapperForCausalLM, BLOCK_PARAMS
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 classification_tasks = {"glue"}
@@ -66,33 +70,33 @@ intervention_mapping = {
     "NodireftIntervention": NodireftIntervention,
 }
 
-def build_gift(backbone, args):
+def build_wegeft(backbone, args):
 
     block_params = {
-        k.replace("gift_block_", ""): v for k, v in vars(args).items() if k.startswith("gift_block")
+        k.replace("wegeft_block_", ""): v for k, v in vars(args).items() if k.startswith("wegeft_block")
     }
     # Keep only the params that are needed for the current block type
     block_params = {k: v for k, v in block_params.items() if k in BLOCK_PARAMS[block_params["block_type"]].keys()}
 
-    share_projections = args.gift_share_projections and len(args.gift_target_modules) > 1
+    share_projections = args.wegeft_share_projections and len(args.wegeft_target_modules) > 1
 
     # Hack
-    enable_gift = None
-    if args.gift_enable_gift is not None and "qkv" in args.gift_target_modules:
-        enable_gift = {"qkv": [k in args.gift_enable_gift for k in ["q", "k", "v"]]}
-        share_projections = args.gift_share_projections and (share_projections or sum(enable_gift["qkv"])>1)
+    enable_wegeft = None
+    if args.wegeft_enable_wegeft is not None and "qkv" in args.wegeft_target_modules:
+        enable_wegeft = {"qkv": [k in args.wegeft_enable_wegeft for k in ["q", "k", "v"]]}
+        share_projections = args.wegeft_share_projections and (share_projections or sum(enable_wegeft["qkv"])>1)
     
-    config = GIFTConfig(
-        rank=args.gift_rank,
-        dtype=args.gift_dtype,
-        gift_parameters=block_params,
-        in_projection_bias=args.gift_in_projection_bias,
-        out_projection_bias=args.gift_out_projection_bias,
-        target_modules=args.gift_target_modules,
-        enable_gift=enable_gift,
-        share_projections=args.gift_share_projections,
+    config = WeGeFTConfig(
+        rank=args.wegeft_rank,
+        dtype=args.wegeft_dtype,
+        wegeft_parameters=block_params,
+        in_projection_bias=args.wegeft_in_projection_bias,
+        out_projection_bias=args.wegeft_out_projection_bias,
+        target_modules=args.wegeft_target_modules,
+        enable_wegeft=enable_wegeft,
+        share_projections=args.wegeft_share_projections,
     )
-    model = GIFTWrapperForCausalLM(
+    model = WeGeFTWrapperForCausalLM(
         config,
         backbone, 
     )
@@ -101,48 +105,48 @@ def build_gift(backbone, args):
 
 class CustomTrainer(Trainer):
 
-    def create_optimizer(self):
-        """
-        Setup the optimizer.
+    def _maybe_log_save_evaluate(self, tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval):
+        if self.control.should_log and self.state.global_step > self._globalstep_last_logged:
+            if is_torch_xla_available():
+                xm.mark_step()
 
-        We provide a reasonable default that works well. If you want to use something else, you can pass a tuple in the
-        Trainer's init through `optimizers`, or subclass and override this method in a subclass.
-        """
-        opt_model = self.model
+            logs: Dict[str, float] = {}
 
-        if self.optimizer is None:
-            decay_parameters = self.get_decay_parameter_names(opt_model)
-            print([n for n, p in opt_model.named_parameters() if (n in decay_parameters and p.requires_grad)])
-            optimizer_grouped_parameters = [
-                {
-                    "params": [
-                        p for n, p in opt_model.named_parameters() if (n in decay_parameters and p.requires_grad)
-                    ],
-                    "weight_decay": self.args.weight_decay,
-                },
-                {
-                    "params": [
-                        p for n, p in opt_model.named_parameters() if (n not in decay_parameters and p.requires_grad)
-                    ],
-                    "weight_decay": 0.0,
-                },
-            ]
+            # all_gather + mean() to get average loss over all processes
+            tr_loss_scalar = self._nested_gather(tr_loss).mean().item()
 
-            optimizer_cls, optimizer_kwargs = CustomTrainer.get_optimizer_cls_and_kwargs(self.args, opt_model)
+            # reset tr_loss to zero
+            tr_loss -= tr_loss
 
-            # Overwrite `params` in case it's created by `get_optimizer_cls_and_kwargs`
-            # e.g. for GaLore optimizer.
-            if "params" in optimizer_kwargs:
-                optimizer_grouped_parameters = optimizer_kwargs.pop("params")
+            logs["loss"] = round(tr_loss_scalar / (self.state.global_step - self._globalstep_last_logged), 4)
+            if grad_norm is not None:
+                logs["grad_norm"] = grad_norm.detach().item() if isinstance(grad_norm, torch.Tensor) else grad_norm
+            logs["learning_rate"] = self._get_learning_rate()
 
-            # For layer-wise dummy optimizers we overwrite optimizer_grouped_parameters with `optimizer_dict`
-            # to avoid arguments conflicts.
-            if "optimizer_dict" in optimizer_kwargs:
-                optimizer_grouped_parameters = optimizer_kwargs.pop("optimizer_dict")
+            # Track GPU memory for the current device
+            logs["gpu_memory"] = torch.cuda.max_memory_allocated(device=self.args.device) / (1024.0 * 1024.0 * 1024.0)
 
-            self.optimizer = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
+            self._total_loss_scalar += tr_loss_scalar
+            self._globalstep_last_logged = self.state.global_step
+            self.store_flos()
 
-        return self.optimizer
+            self.log(logs)
+
+        metrics = None
+        if self.control.should_evaluate:
+            metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+            self._report_to_hp_search(trial, self.state.global_step, metrics)
+
+            # Run delayed LR scheduler now that metrics are populated
+            if isinstance(self.lr_scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                metric_to_check = self.args.metric_for_best_model
+                if not metric_to_check.startswith("eval_"):
+                    metric_to_check = f"eval_{metric_to_check}"
+                self.lr_scheduler.step(metrics[metric_to_check])
+
+        if self.control.should_save:
+            self._save_checkpoint(model, trial, metrics=metrics)
+            self.control = self.callback_handler.on_save(self.args, self.state, self.control)
 
 
 def finetune(
@@ -204,8 +208,8 @@ def finetune(
     
     # store/log run details
     print(
-        f"task: {task}, model: {model}, lr: {lr}, weight_decay: {weight_decay}, rank: {args.gift_rank}, "
-        f"type: {args.gift_block_block_type}, "
+        f"task: {task}, model: {model}, lr: {lr}, weight_decay: {weight_decay}, rank: {args.wegeft_rank}, "
+        f"type: {args.wegeft_block_block_type}, "
         f"epoch: {epochs}, train_on_inputs: {train_on_inputs}, "
         f"max_length: {max_length}, allow_cls_grad: {allow_cls_grad}"
     )
@@ -218,9 +222,9 @@ def finetune(
     train_dataset_str = train_dataset
     now = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     if train_dataset is not None:
-        run_name = f"{model_str}.{task}.{train_dataset_str}.{test_split}.{now}.{args.gift_rank}.{lr}.{weight_decay}"
+        run_name = f"{model_str}.{task}.{train_dataset_str}.{test_split}.{now}.{args.wegeft_rank}.{lr}.{weight_decay}"
     else:
-        run_name = f"{model_str}.{task}.{now}.{args.gift_rank}.{lr}.{weight_decay}"
+        run_name = f"{model_str}.{task}.{now}.{args.wegeft_rank}.{lr}.{weight_decay}"
 
     # which layers to intervene on
     if layers != "all":
@@ -365,7 +369,7 @@ def finetune(
 
     # Chinmay:
     model.requires_grad_(False)
-    wrapped_model = build_gift(model, args)
+    wrapped_model = build_wegeft(model, args)
     print(wrapped_model)
 
     num_trainable, percent_trainable = wrapped_model.num_trainable_parameters()
@@ -424,7 +428,7 @@ def finetune(
 
     # make trainer
     trainer_class = ReftTrainerForSequenceClassification \
-        if task in classification_tasks else Trainer
+        if task in classification_tasks else CustomTrainer
     trainer = trainer_class(
         model=wrapped_model,
         tokenizer=tokenizer,
@@ -538,52 +542,52 @@ def main():
     # Hypernet
     group = parser.add_argument_group("Hypernet parameters")
     group.add_argument(
-        "--gift_rank",
+        "--wegeft_rank",
         type=int,
         default=16,
-        help="Rank r in GIFT.",
+        help="Rank r in WeGeFT.",
     )
     group.add_argument(
-        "--gift_dtype",
+        "--wegeft_dtype",
         type=str,
         default="bfloat16",
-        help="dtype for GIFT.",
+        help="dtype for WeGeFT.",
     )
     group.add_argument(
-        "--gift_in_projection_bias",
+        "--wegeft_in_projection_bias",
         action="store_true",
         default=False,
-        help="Add bias to the the first linear projection in gift (phi).",
+        help="Add bias to the the first linear projection in wegeft (phi).",
     )
     group.add_argument(
-        "--gift_out_projection_bias",
+        "--wegeft_out_projection_bias",
         action="store_true",
         default=False,
-        help="Add bias to the the second linear projection in gift (psi).",
+        help="Add bias to the the second linear projection in wegeft (psi).",
     )
     group.add_argument(
-        "--gift_target_modules",
+        "--wegeft_target_modules",
         default=["q_proj", "v_proj"],
         type=str,
         nargs="+",
         help="Module to apply finetuning on.",
     )
     group.add_argument(
-        "--gift_enable_gift",
+        "--wegeft_enable_wegeft",
         default=None,
         type=str,
         nargs="+",
-        help="If target module is a fused layer (qkv in ViT), which modules to apply GIFT to? E.g., for applying GIFT to Q and V, use --gift_enable_gift q v.",
+        help="If target module is a fused layer (qkv in ViT), which modules to apply WeGeFT to? E.g., for applying WeGeFT to Q and V, use --wegeft_enable_wegeft q v.",
     )
     group.add_argument(
-        "--gift_share_projections",
+        "--wegeft_share_projections",
         action="store_true",
         default=False,
         help="Share the linear projection between modules.",
     )
-    group = parser.add_argument_group("GIFT Schema Block parameters")
+    group = parser.add_argument_group("WeGeFT Schema Block parameters")
     group.add_argument(
-        "--gift_block_block_type",
+        "--wegeft_block_block_type",
         type=str,
         default="simple_block",
         choices=["simple_block", "transformer", "pamcat_transformer", "mlp_mixer", "mlp"],
@@ -591,31 +595,31 @@ def main():
     )
     # Transformer Block params
     group.add_argument(
-        "--gift_block_num_blocks",
+        "--wegeft_block_num_blocks",
         type=int,
         default=1,
-        help="Number of blocks in the chosen GIFT schema.",
+        help="Number of blocks in the chosen WeGeFT schema.",
     )
     group.add_argument(
-        "--gift_block_num_heads",
+        "--wegeft_block_num_heads",
         type=int,
         default=1,
         help="Number of attention heads in transformer, and pamcat_transformer.",
     )
     group.add_argument(
-        "--gift_block_mlp_ratio",
+        "--wegeft_block_mlp_ratio",
         type=float,
         default=2.,
         help="MLP ratio in transformer, pamcat_transformer, mlp and mlp_mixer",
     )
     group.add_argument(
-        "--gift_block_drop_path",
+        "--wegeft_block_drop_path",
         type=float,
         default=0.,
         help="Drop Path in blocks.",
     )
     group.add_argument(
-        "--gift_block_norm_layer",
+        "--wegeft_block_norm_layer",
         type=str,
         default="l2",
         choices=["l2", "none"],
@@ -623,13 +627,13 @@ def main():
     )
     # PamCat
     group.add_argument(
-        "--gift_block_num_clusters",
+        "--wegeft_block_num_clusters",
         type=int,
         default=64,
         help="Number of clusters in pamcat_transformer.",
     )
     group.add_argument(
-        "--gift_block_cluster_activation",
+        "--wegeft_block_cluster_activation",
         type=str,
         default="sigmoid",
         choices=["sigmoid", "softmax"],
@@ -637,20 +641,20 @@ def main():
     )
     # MLP Mixer
     group.add_argument(
-        "--gift_block_num_mixed_tokens",
+        "--wegeft_block_num_mixed_tokens",
         type=int,
         default=64,
         help="Number of mixed tokens in the the token mixing layer of mlp_mixer.",
     )
     group.add_argument(
-        "--gift_block_channel_mixing_ratio",
+        "--wegeft_block_channel_mixing_ratio",
         type=float,
         default=2.,
         help="MLP ratio as in transformers.",
     )
     # Simple down and up
     group.add_argument(
-        "--gift_block_act_layer",
+        "--wegeft_block_act_layer",
         type=str,
         default="identity",
         choices=["identity", "gelu", "sigmoid", ],
