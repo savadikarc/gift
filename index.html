@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Generative Parameter Efficient Fine-Tuning">
+        content="WeGeFT: Weight‑Generative Fine‑Tuning">
   <meta name="keywords" content="PEFT">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Generative Parameter Efficient Fine-Tuning</title>
+  <title>WeGeFT: Weight‑Generative Fine‑Tuning</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -18,7 +18,6 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
@@ -37,7 +36,10 @@
     <div class="container is-max-desktop decorate-purple">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Generative Parameter Efficient Fine-Tuning<br><span class="dnerf">(Gift)</span></h1>
+          <h1 class="title is-2 publication-title">
+            <span class="dnerf">WeGeFT</span>: 
+            <p>Weight‑Generative Fine‑Tuning for Multi‑Faceted Efficient Adaptation of Large Models</p>
+          </h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="https://savadikarc.github.io">Chinmay Savadikar</a><sup>1</sup>,</span>
@@ -48,16 +50,20 @@
             </span>
           </div>
 
-          <div class="is-size-5 publication-authors">
+          <div class="is-size-5 publication-authors" style="margin-bottom: 1rem;">
             <span class="author-block"><sup>1</sup>North Carolina State University,</span>
             <span class="author-block"><sup>2</sup>An Independent Researcher</span>
+          </div>
+          
+          <div class="subtitle is-3 publication-subtitle" style="margin-bottom: 0.1rem;">
+            ICML 2025
           </div>
 
           <div class="column has-text-centered">
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2312.00700.pdf"
+                <a href="https://openreview.net/forum?id=K0sv5T2usb"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -76,7 +82,7 @@
               </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/savadikarc/gift"
+                <a href="https://github.com/savadikarc/wegeft"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fab fa-github"></i>
@@ -97,33 +103,89 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <div class="center">
-      <img src="./static/images/gift.svg"
+      <img src="./static/images/wegeft.svg"
                  class="interpolation-image"
-                 alt="GIFT."/>
+                 alt="WeGeFT."/>
       </div>
       <div class="textbox">
         <h2 class="subtitle has-text-justified">
-          LoRA (a) is a layer-specific fine-tuning paradigm by  learning the low-rank weight residuals directly as model 
-          parameters. Our GIFT (b) induces an explicit and direct mapping between the  fine-tuned model and the frozen pretrained model, 
-          i.e., learns the fine-tuned weights directly from the pretrained weights. We show that the finetuned weights can be learned using 
-          a simple linear transformation of the pretrained weights: <br>
-          <div class="center">
-          \(\hat{\omega}^l_{d_{out}\times d_{in}}= \omega^l_{d_{out}\times d_{in}} \cdot P_{d_{in}\times d_{in}} =\omega^l_{d_{out}\times d_{in}} \cdot (\mathbb{I}+\Theta_{d_{in}\times d_{in}})\) <br>
-          </div>
-          where \(\Theta\) is a low-rank matrix
-          <div class="center">
-            \(\Theta_{d_{in}\times d_{in}} = \phi_{d_{in}\times r} \cdot \psi_{r\times d_{in}}\)
-          </div>
-          With GIFT, we can write the output of a Linear layer as<br><br>
-          <div class="center">
-            \(\hat{y}^l_{ N\times d_{out}} = x^l_{ N\times d_{in}} \cdot (\hat{\omega}^l_{d_{out}\times d_{in}})^{\top} + b^l_{d_{out}}\)
-          </div>
-          and equivalently,<br><br>
-          <div class="center">
-            \(\hat{y}^l_{ N\times d_{out}}= (x^l_{ N\times d_{in}} + x^l_{ N\times d_{in}}\cdot \phi_{d_{in}\times r}\cdot \psi_{r\times d_{in}}) \cdot (\omega^l_{d_{out}\times d_{in}})^{\top} + b^l_{d_{out}}\)
-          </div><br>
-          hence bridging PEFT and ReFT.
+          Parameter Efficient Fine-Tuning and Representation Fine-Tuning allow efficient adaptation of large models
+          at lower cost than full fine-tuning. Low-Rank Adaptation (LoRA) has become the de-facto method for 
+          Parameter-Efficient Fine-Tuning, with multi-faceted efficiency in terms of Performance, Parameters, Memory, 
+          and Compute (Training Wall Time). However, recent variants sacrifice some aspects of efficiency.
+          <b>Weight-Generative Fine-Tuning</b> (WeGeFT, pronounced as <i>wee-gift</i>) introduces a novel formulation where 
+          fine-tuning weight residuals are generated from the pretrained weights using a trainable weight generator
+          leveraging their inherent knowledge for better expressivity.
+          WeGeFT preserves the multi-faceted efficiency, and achieves similar or better performance than
+          prior methods at a fraction of the parameter cost, and unifies PEFT and ReFT.
         </h2>
+      </div>
+      <div class="center" style="margin-top: 0.5em;">
+        <img src="./static/images/wegeft-detail.svg"
+                   class="interpolation-image"
+                   alt="WeGeFT Detailed."/>
+      </div>
+      <h2 class="subtitle has-text-justified">
+        We show that the weigh generator can be a formulated as a simple linear transformation of the pretrained
+        weights, leading to multiplicative updates in the weight space for richer and more structured transformations 
+        compared to additive methods. This linearity also preserves the multi-faceted efficiency, and unifies PEFT and
+        ReFT.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero center">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Simple Formulation, Strong Performance</h2>
+      <div class="center">
+        <img src="./static/images/wegeft-performance-vs-parameters.svg"
+                  class="interpolation-image"
+                  alt="WeGeFT."/>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          Comparisons of performance vs. trainable parameters between our WeGeFT and baseline methods 
+          on three tasks using the Llama model family. Our WeGeFT retains those as LoRA in training and 
+          testing. Overall, our WeGeFT shows very strong multi-faceted efficiency across parameters, 
+          representations, compute and memory.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<section class="hero">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3">Multi-Faceted Efficiency</h2>
+      <div class="center">
+      <img src="./static/images/multi-facet-measures.svg"
+                 class="interpolation-image"
+                 style="width: 60%;"
+                 alt="WeGeFT."/>
+      </div>
+      <div class="textbox">
+        <h2 class="subtitle has-text-justified">
+          Comparison of the ratio of the Performance, Parameters, GPU Memory and Compute (Training Wall Time) for various 
+          PEFT methods with those of LoRA using Llama 2 on the Math10k benchmark. 
+          WeGeFT maintains the performancand efficiency of LoRA, as opposed to other methods.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero">
+  <div class="container is-max-desktop" style="width: 100%">
+    <div class="hero-body">
+      <h2 class="title is-3">WeGeFT Bridges PEFT and ReFT</h2>
+      <div class="center">
+      <img src="./static/images/peft-reft.svg"
+                 class="interpolation-image"
+                 style="width: 55%;"
+                 alt="WeGeFT."/>
       </div>
     </div>
   </div>
@@ -134,35 +196,17 @@
     <div class="hero-body">
       <h2 class="title is-3">Simple Formulation, Strong Performance</h2>
       <div class="center">
-      <img src="./static/images/acc-vs-params.svg"
-                 style="width: 100%; border: 1px solid #DBDBDB; border-radius: 10px;"
-                 class="interpolation-image"
-                 alt="GIFT."/>
+        <img src="./static/images/wegeft-performance-vs-parameters.svg"
+                  class="interpolation-image"
+                  alt="WeGeFT."/>
       </div>
       <div class="textbox">
         <h2 class="subtitle has-text-justified">
-          We perform experiments on multiple Natural Language and Visual Recognition tasks: Figure above briefly summarizes performance on 
-          Instruction Following, Arithmetic Reasoning, and Commonsense Reasoning usingthe Llama family of models. <br><br>
-          
-          (i) <b>Instruction Following with Llama-2</b>: Our GIFT\(^{16}_{\alpha}\) obtains higher Win Rate than a recently proposed  representation 
-          fine-tuning method, LoReFT. With slightly increased parameters (still 4 times less than LoRA), our GIFT\(^{128}_{\alpha}\) can 
-          even outperform  <span class="tt">GPT 3.5 Turbo 1106</span>. <br><br>
-          
-          (ii) <b>Arithmetic Reasoning with LLaMa-1</b>: Our GIFT\(_{\beta}^{64}\) outperforms VeRA significantly using the same fine-tuning 
-          parameter budget. <br><br>
-          
-          (iii) <b>Commonsense Reasoning with three Llama Models</b>: our GIFT\(_{\gamma}^{64}\) obtains 6% absolute increase in average accuracy with 53 
-          times less parameters using <span class="tt">Llama-3</span> compared to LoRA. It is also consistently better than LoReFT, but using about half the 
-          number of parameters. <br><br>
-
-          See full results in our paper.
+          Comparisons of performance vs. trainable parameters between our WeGeFT  and baseline methods on 
+          three tasks using the Llama model family. WeGeFT maintains the compute 
+          and memory efficiency of LoRA, thus achieving very strong multi-faceted efficiency across parameters, 
+          representations, compute and memory.
         </h2>
-      </div><br>
-      <h2 class="title is-4">Natural Language Understanding on GLUE</h2>
-      <div class="center">
-      <img src="./static/images/results-glue.png"
-                 class="interpolation-image"
-                 alt="GIFT."/>
       </div>
     </div>
   </div>
@@ -174,24 +218,24 @@
       <h2 class="title is-3">Visual Recognition</h2>
       <h2 class="title is-4">FGVC Benchmark</h2>
       <div class="center">
-      <img src="./static/images/results-fgvc.png"
+      <img src="./static/images/results-fgvc.svg"
                  class="interpolation-image"
-                 alt="GIFT."/>
+                 alt="WeGeFT."/>
       </div>
       <div class="textbox">
         <h2 class="subtitle has-text-justified">
           Results on the finegrained visual classification (FGVC) tasks. The number of trainable parameters are reported without the classification head which has the same number 
-          of parameters for all the methods. The GPU memory usage is reported via <span class="tt">torch.cuda.max_memory_allocated()</span> during training with the batch size 32.
+          of parameters for all the methods.
         </h2>
       </div>
       <div class="center">
         <img src="./static/images/interpretability.svg"
                    class="interpolation-image"
-                   alt="GIFT."/>
+                   alt="WeGeFT."/>
       </div>
       <div class="textbox">
         <h2 class="subtitle has-text-justified">
-          When GIFT is applied to fine-tune the projection layers in the multi-head self-attention modules of Vision Tranformers on image classification tasks,
+          When WeGeFT is applied to fine-tune the projection layers in the multi-head self-attention modules of Vision Tranformers on image classification tasks,
           the output of the first linear layer <span id="cluster-eq">\((C^l_{d_{out}\times r}=\omega^l_{d_{out}\times d_{in}}\cdot \phi_{d_{in}\times r})\)</span> plays the role 
           of a \(r\)-way segmentation/token-clustering head. This localization ability emerges as a by-product without any direct supervision for the segmentation maps,
           using the standard cross-entropy loss during fine-tuning. The maps can form on objects/parts in images, even handling occlusions (e.g., the bird body in the fifth column), 
@@ -201,7 +245,7 @@
       <div class="center">
         <img src="./static/images/interpretability-all.svg"
                  class="interpolation-image"
-                 alt="GIFT."/>
+                 alt="WeGeFT."/>
       </div>
       <div class="textbox">
         <h2 class="subtitle has-text-justified">
@@ -211,12 +255,6 @@
           examples of tires, windshield and bumper of cars in the <i>bottom-right</i>. We can see global (object level) 
           as well as part-level maps.
         </h2>
-      </div><br>
-      <h2 class="title is-4">VTAB-1k Benchmark</h2>
-      <div class="center">
-      <img src="./static/images/results-vtab.png"
-                 class="interpolation-image"
-                 alt="GIFT."/>
       </div>
       
     </div>
@@ -227,13 +265,13 @@
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
     <pre class="rounded"><code>
-@misc{savadikar2024gift,
-  title={Generative Parameter Efficient Fine-Tuning}, 
+@inproceedings{
+  savadikar2025wegeft,
+  title={WeGe{FT}: Weight\nobreakdash-Generative Fine\nobreakdash-Tuning for Multi\nobreakdash-Faceted Efficient Adaptation of Large Models},
   author={Chinmay Savadikar and Xi Song and Tianfu Wu},
-  year={2024},
-  eprint={2312.00700},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV}
+  booktitle={Forty-second International Conference on Machine Learning},
+  year={2025},
+  url={https://openreview.net/forum?id=K0sv5T2usb}
 }
     </code></pre>
   </div>
