@@ -1,0 +1,6 @@
+transformers==4.44.2
+accelerate==0.34.0
+datasets==2.21.0
+evaluate==0.4.2
+sentencepiece==0.2.0
+wandb==0.17.8

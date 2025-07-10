@@ -1,0 +1,13 @@
+use_peft: true
+lora_r: 4
+lora_relative_r: null
+lora_target_modules: all
+num_vectors: 2048
+vector_length: 256
+topk: 2
+train_embeddings: false
+use_rslora: false
+use_loraplus: false
+loraplus_lr_ratio: null
+lora_alpha: 128
+vblora: true

@@ -1,0 +1,13 @@
+use_peft: true
+lora_r: 64
+lora_relative_r: null
+lora_target_modules: "['q_proj','k_proj','v_proj','o_proj','up_proj','gate_proj','down_proj']"
+tied_modules: "['model.layers.\\d+.self_attn.q_proj'],['model.layers.\\d+.self_attn.k_proj'],['model.layers.\\d+.self_attn.v_proj'],['model.layers.\\d+.self_attn.o_proj'],['model.layers.\\d+.mlp.up_proj'],['model.layers.\\d+.mlp.gate_proj'],['model.layers.\\d+.mlp.down_proj']"
+transform_dim: "{'q_proj': 'input', 'k_proj': 'input', 'v_proj': 'input', 'o_proj': 'input', 'up_proj': 'input', 'gate_proj': 'input', 'down_proj': 'input'}"
+train_embeddings: false
+use_rslora: false
+use_loraplus: false
+loraplus_lr_ratio: null
+lora_alpha: 128
+init_wegeft_weights: true
+wegeft: true
