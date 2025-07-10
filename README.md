@@ -6,12 +6,12 @@ ICML 2025<br>
 
 ## Method Overview
 <p align="center">
-<img src="wegeft-detail.jpg" width="70%" height="100%" class="center">
+<img src="wegeft-detail.jpg" height="100%" class="center">
 </p>
 
 ## Performance
 <p align="center">
-<img src="acc-vs-params.jpg" width="70%" height="100%" class="center">
+<img src="acc-vs-params.jpg" height="100%" class="center">
 </p>
 
 ## Visual Interpretability
