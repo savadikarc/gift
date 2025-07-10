@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  - model: llama
+dry_run: False
+wandb:
+  use_wandb: false
+  project: "metamath"
+  name: null
+seed: 42
+gradient_checkpointing: True
+hydra:
+  sweeper:
+    params:
+      ++dataset_name: mnli
+      ++seed: 0
