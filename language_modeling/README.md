@@ -39,16 +39,16 @@ cd scripts
 `<GPU_ID>` is the numeric ID of the GPU to be used (e.g., for cuda:0, use `<GPU_ID>` as `0`). We tune the hyperparameters using `yahma/llama-7b-hf`. For tuning the parameters for Math10k benchmark, use `gsm8k` as the <TASK>, and for tuning the parameters for Commonsense Reasoning, use `boolq`.
 
 ### Generic Training script
-
+The training script supports multiple tuners and tasks
 ```bash
 cd scripts
 ./train.sh <GPU_ID> <TASK> <MODEL> <LR> <WARMUP_RATIO> <TUNER> <SEED> [<OPTIONAL_ARGS>]
 ```
-<TASK> can be `commonsense`, `math10k`.
+`<TASK>` can be `commonsense`, `math10k`.
 
-<MODEL> is any valid model hosted on Hugging Face hub. We experiment with `yahma/llama-7b-hf`, `meta-llama/Llama-2-7b-hf`, and `meta-llama/Meta-Llama-3-8B`.
+`<MODEL>` is any valid model hosted on Hugging Face hub. We experiment with `yahma/llama-7b-hf`, `meta-llama/Llama-2-7b-hf`, and `meta-llama/Meta-Llama-3-8B`.
 
-<TUNER> can be `wegeft`, `lora`, `vera`. Additional tuners can be added by writing a custom training script. See [train_wegeft.py](scripts/train_wegeft.py)
+`<TUNER>` can be `wegeft`, `lora`, `vera`. Additional tuners can be added by writing a custom training script. See [train_wegeft.py](scripts/train_wegeft.py).
 
 ### Commonsense reasoning
 
@@ -71,10 +71,6 @@ e.g
 We report the average across 3 runs with seeds `42`, `43` and `44`. We use the same hyperparameters as those found for LLaMa-1 for Llama 2 and Llama3.
 
 ### Math10k
-
-The following script runs the commonsense reasoning task based on the hyperparameters found in the previous step:
-
-e.g
 ```sh
 # WeGeFT
 ./train.sh 0 math10k meta-llama/Llama-2-7b-hf 4e-4 0.1 wegeft 42 --wegeft_rank 64 --wegeft_alpha 128 --wegeft_dropout 0.1

@@ -18,7 +18,7 @@ Note: The experiments with Caltech101 require a different tfds version. To insta
 pip install -e .[caltech]
 ```
 
-## Vision Transformer (ViT) backbone using [timm](https://github.com/huggingface/pytorch-image-models/tree/main) for image classification
+## Applying WeGeFT to ViT backbone using [timm](https://github.com/huggingface/pytorch-image-models/tree/main) for image classification
 ```python
 import timm
 from wegeft.wegeft import WeGeFTWrapperForImageClassification, WeGeFTConfig
@@ -51,9 +51,7 @@ model = WeGeFTWrapperForImageClassification(wegeft_config, backbone)
 # ...
 ```
 
-# Experiments
-
-## Visual Recognition
+## Experiments
 ### FGVC
 Please refer to [scripts/visual_classification/fgvc/README.md](scripts/fgvc/README.md) for details on data preparation and training.
 
